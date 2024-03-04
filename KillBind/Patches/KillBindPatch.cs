@@ -4,7 +4,7 @@ using KillBindNS;
 using System;
 using UnityEngine;
 
-namespace KillBind.Binds
+namespace KillBind.Patches
 {
     [HarmonyPatch(typeof(PlayerControllerB))]
     public class KillBindPatch

@@ -2,8 +2,11 @@
 using BepInEx.Configuration;
 using BepInEx.Logging;
 using HarmonyLib;
+using UnityEngine;
 using LethalCompanyInputUtils.Api;
 using UnityEngine.InputSystem;
+using System.Reflection;
+using System.IO;
 
 namespace KillBindNS
 {
@@ -32,14 +35,21 @@ namespace KillBindNS
 
         //Mod Non-Config Vars
         public static KillBind InputActionInstance = new KillBind();
-
+        public static AssetBundle ModMenu;
         //Mod Functions
         public void Awake()
         {
-            SetModConfig();
-            _harmony.PatchAll();
             mls = BepInEx.Logging.Logger.CreateLogSource(modGUID);
             mls = this.Logger;
+
+            ModMenu = AssetBundle.LoadFromFile(Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), "killbindmenu"));
+            if (ModMenu == null)
+            {
+                mls.LogError("Error while trying to load prefab.");
+                return;
+            }
+            SetModConfig();
+            _harmony.PatchAll();
             mls.LogInfo($"{modName} {modVersion} has loaded");
         }
 
