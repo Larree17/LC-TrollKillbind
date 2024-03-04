@@ -7,6 +7,7 @@ using LethalCompanyInputUtils.Api;
 using UnityEngine.InputSystem;
 using System.Reflection;
 using System.IO;
+using KillBind.Patches;
 
 namespace KillBindNS
 {
@@ -48,6 +49,7 @@ namespace KillBindNS
                 mls.LogError("Error while trying to load prefab.");
                 return;
             }
+
             SetModConfig();
             _harmony.PatchAll();
             mls.LogInfo($"{modName} {modVersion} has loaded");
