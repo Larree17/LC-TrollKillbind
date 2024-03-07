@@ -7,6 +7,10 @@ using LethalCompanyInputUtils.Api;
 using UnityEngine.InputSystem;
 using System.Reflection;
 using System.IO;
+using UnityEngine.Events;
+using UnityEngine.Windows;
+using UnityEngine.UI;
+using System.Diagnostics.Tracing;
 
 namespace KillBindNS
 {
@@ -57,7 +61,10 @@ namespace KillBindNS
                 mls.LogError("Error while trying to load a prefab.");
             }
 
+            //Set Default Config Values
             SetModConfig();
+
+            //Patch All Code
             _harmony.PatchAll();
             mls.LogInfo($"{modName} {modVersion} has loaded");
         }
