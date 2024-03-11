@@ -44,7 +44,7 @@ namespace KillBindNS
             mls = Logger;
 
             //Load AssetBundle
-            ModAssetBundle = AssetBundle.LoadFromFile(Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), "bundlekillbind"));
+            ModAssetBundle = AssetBundle.LoadFromFile(Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), "confusified_killbind.ui"));
             if (ModAssetBundle == null)
             {
                 mls.LogError("Error while trying to load the AssetBundle.");
