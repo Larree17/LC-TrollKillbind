@@ -1,4 +1,6 @@
-# hi this is my killbind mod github page
+# KillBind mod for Lethal Company
+Welcome to the GitHub page for the KillBind mod for Lethal Company → https://thunderstore.io/c/lethal-company/p/Confusified/KillBind/
 
-still gotta make it look better and stuff
-but it's here now
+Here you can report any bugs you've found or make suggestions for the mod
+
+Feel free to take a look at the code and perhaps learn from it (or improve it!)
