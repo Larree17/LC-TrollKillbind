@@ -41,7 +41,7 @@ namespace KillBind.Patches
             //Settings UI
             SettingsUI = ObjectMenu.transform.Find("SettingsUI").gameObject;
             SettingsUI.SetActive(false);
-            //remains visible when going out of settings panel
+            //remains visible when going out of settings panel ^
 
 
             BasePlugin.mls.LogInfo("Finished menu setup");
