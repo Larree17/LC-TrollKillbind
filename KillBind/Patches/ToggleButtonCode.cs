@@ -8,59 +8,62 @@ namespace KillBind.Patches
     [HarmonyPatch(typeof(MenuManager))]
     public class ToggleButtonCode
     {
-        public static GameObject MenuToggle; //Toggle button that will be found in settings panel
+        public static GameObject MenuToggleButton; //Toggle button that will be found in settings panel
         public static GameObject SettingsUI; //Settings UI of this mod
+        public static GameObject ObjectMenu; //Canvas of UI
 
-        public static void onToggleButtonClick()
+        public static void OnToggleButtonClick()
         {
-            if (SettingsUI.activeSelf)
-            {
-                BasePlugin.mls.LogInfo("hid settings ui");
-                SettingsUI.SetActive(false);
-            }
-            else
-            {
-                BasePlugin.mls.LogInfo("show settings ui");
-                SettingsUI.SetActive(true);
-            }
+            SettingsUI.SetActive(!SettingsUI.activeSelf);
         }
 
-
-        [HarmonyPatch("Awake")]
+        [HarmonyPatch("Start")]
         [HarmonyPostfix]
-        public static void onAwake()
+        public static void ExecOnStart(MenuManager __instance)
         {
-            //Toggle Button Creation
-            MenuToggle = Object.Instantiate<GameObject>(BasePlugin.Menu1);
-            Object.DontDestroyOnLoad(MenuToggle); //Do not destroy on scene change
-            MenuToggle.SetActive(false);
+            if (__instance.isInitScene) //avoid executing twice
+            {
+                return;
+            }
 
-            Button ToggleButton = MenuToggle.transform.Find("ToggleButton").GetComponent<Button>();
-            ToggleButton.onClick.AddListener(onToggleButtonClick);
+            ObjectMenu = Object.Instantiate(BasePlugin.Menu);
+            ObjectMenu.SetActive(true);
+            ObjectMenu.hideFlags = HideFlags.None;
 
-            //Settings UI Creation
-            SettingsUI = Object.Instantiate<GameObject>(BasePlugin.Menu2);
-            Object.DontDestroyOnLoad(SettingsUI); //Do not destroy on scene change
+            //Toggle Button
+            MenuToggleButton = ObjectMenu.transform.Find("ToggleButton").gameObject;
+            MenuToggleButton.SetActive(false);
+
+            //Toggle Button Functionality
+            Button ToggleButton = MenuToggleButton.GetComponent<Button>();
+            ToggleButton.onClick.AddListener(OnToggleButtonClick);
+
+            //Settings UI
+            SettingsUI = ObjectMenu.transform.Find("SettingsUI").gameObject;
             SettingsUI.SetActive(false);
+            //remains visible when going out of settings panel
+
+
+            BasePlugin.mls.LogInfo("Finished menu setup");
         }
 
         [HarmonyPatch("EnableUIPanel")]
         [HarmonyPostfix]
-        public static void onEnable(GameObject enablePanel)
+        public static void OnEnable(GameObject enablePanel)
         {
             if (enablePanel.name == "SettingsPanel")
             {
-                MenuToggle.SetActive(true);
+                MenuToggleButton.SetActive(true);
             }
         }
 
         [HarmonyPatch("DisableUIPanel")]
         [HarmonyPostfix]
-        public static void onDisable(GameObject enablePanel)
+        public static void OnDisable(GameObject enablePanel)
         {
             if (enablePanel.name == "SettingsPanel")
             {
-                MenuToggle.SetActive(false);
+                MenuToggleButton.SetActive(false);
             }
         }
     }

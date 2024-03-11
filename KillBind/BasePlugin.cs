@@ -7,10 +7,6 @@ using LethalCompanyInputUtils.Api;
 using UnityEngine.InputSystem;
 using System.Reflection;
 using System.IO;
-using UnityEngine.Events;
-using UnityEngine.Windows;
-using UnityEngine.UI;
-using System.Diagnostics.Tracing;
 
 namespace KillBindNS
 {
@@ -32,7 +28,7 @@ namespace KillBindNS
         public static ManualLogSource mls;
 
         //Mod Config Vars
-        private ConfigFile Configuration = new ConfigFile(Utility.CombinePaths(Paths.ConfigPath + "\\" + modGUID.Replace(".", "\\") + ".cfg"), false);
+        private readonly ConfigFile Configuration = new ConfigFile(Utility.CombinePaths(Paths.ConfigPath + "\\" + modGUID.Replace(".", "\\") + ".cfg"), false);
         public static ConfigEntry<bool> ModEnabled;
         public static ConfigEntry<int> DeathCause;
         public static ConfigEntry<int> HeadType;
@@ -40,26 +36,28 @@ namespace KillBindNS
         //Mod Non-Config Vars
         public static KillBind InputActionInstance = new KillBind();
         public static AssetBundle ModAssetBundle;
-        public static GameObject Menu1;
-        public static GameObject Menu2;
+        public static GameObject Menu;
         //Mod Functions
         public void Awake()
         {
             mls = BepInEx.Logging.Logger.CreateLogSource(modGUID);
-            mls = this.Logger;
+            mls = Logger;
+
+            //Load AssetBundle
             ModAssetBundle = AssetBundle.LoadFromFile(Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), "bundlekillbind"));
             if (ModAssetBundle == null)
             {
-                mls.LogError("Error while trying to load AssetBundle.");
+                mls.LogError("Error while trying to load the AssetBundle.");
                 return;
             }
-            Menu1 = ModAssetBundle.LoadAsset<GameObject>("Assets/KillBindMod/MenuToggle.prefab");
-            Menu2 = ModAssetBundle.LoadAsset<GameObject>("Assets/KillBindMod/MenuUI.prefab");
-
-            if (Menu1 == null || Menu2 == null)
+            //Load Prefab
+            Menu = ModAssetBundle.LoadAsset<GameObject>("Assets/KillBindMod/KillbindUI.prefab");
+            if (Menu == null)
             {
-                mls.LogError("Error while trying to load a prefab.");
+                mls.LogError("Error while trying to load the prefab.");
+                return;
             }
+            Menu.hideFlags = HideFlags.HideAndDontSave;
 
             //Set Default Config Values
             SetModConfig();

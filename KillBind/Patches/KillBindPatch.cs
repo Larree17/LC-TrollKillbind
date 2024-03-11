@@ -11,7 +11,7 @@ namespace KillBind.Patches
     {
         [HarmonyPatch("LateUpdate")]
         [HarmonyPostfix]
-        public static void onPressKill(PlayerControllerB __instance)
+        public static void OnPressKill(PlayerControllerB __instance)
         {
             if (BasePlugin.ModEnabled.Value && BasePlugin.InputActionInstance.ExplodeKey.triggered && __instance == GameNetworkManager.Instance.localPlayerController && !__instance.isPlayerDead && !__instance.isTypingChat && !HUDManager.Instance.typingIndicator.enabled && (!UnityEngine.Object.FindObjectOfType<Terminal>().terminalInUse && !__instance.inTerminalMenu))
             {
