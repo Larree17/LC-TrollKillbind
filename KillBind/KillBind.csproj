@@ -74,7 +74,7 @@
   <ItemGroup>
     <Compile Include="BasePlugin.cs" />
     <Compile Include="Patches\KillBindPatch.cs" />
-    <Compile Include="Patches\ToggleButtonCode.cs" />
+    <Compile Include="UICode.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

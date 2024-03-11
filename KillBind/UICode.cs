@@ -6,7 +6,7 @@ using UnityEngine.UI;
 namespace KillBind.Patches
 {
     [HarmonyPatch(typeof(MenuManager))]
-    public class ToggleButtonCode
+    public class UICode
     {
         public static GameObject MenuToggleButton; //Toggle button that will be found in settings panel
         public static GameObject SettingsUI; //Settings UI of this mod
