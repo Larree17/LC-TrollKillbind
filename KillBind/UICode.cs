@@ -19,7 +19,6 @@ namespace KillBind.Patches
         {
             UIActive = !SettingsUI.activeSelf;
             SettingsUI.SetActive(UIActive);
-            
         }
 
         public static void OnDDValueChanged(TMP_Dropdown origin)
@@ -101,14 +100,11 @@ namespace KillBind.Patches
 
         public class MenuPatches
         {
-            [HarmonyPatch("Start")]
+            [HarmonyPatch("Awake")]
             [HarmonyPostfix]
             public static void ExecOnStart_Menu(MenuManager __instance) //Create the UI on Start
             {
-                if (__instance.isInitScene) //avoid executing twice
-                {
-                    return;
-                }
+                
 
                 CreateUI();
                 ConfigureUI();
