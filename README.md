@@ -1,5 +1,7 @@
 # KillBind mod for Lethal Company
-Welcome to the GitHub page for the KillBind mod for Lethal Company → https://thunderstore.io/c/lethal-company/p/Confusified/KillBind/
+[![Thunderstore Downloads](https://img.shields.io/thunderstore/dt/Confusified/KillBind?style=flat&logo=thunderstore&logoColor=white&label=Thunderstore)](https://thunderstore.io/c/lethal-company/p/Confusified/KillBind)
+
+Welcome to the GitHub page for the KillBind mod for Lethal Company  
 
 Here you can report any bugs you've found or make suggestions for the mod
 
