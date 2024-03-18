@@ -10,6 +10,7 @@ namespace KillBind.Patches
 {
     public class UICode
     {
+
         public static GameObject MenuToggleButton; //Toggle button that will be found in settings panel
         public static GameObject SettingsUI; //Settings UI of this mod
         public static bool UIActive = false; //State of visibility of UI
@@ -19,6 +20,10 @@ namespace KillBind.Patches
         {
             UIActive = !SettingsUI.activeSelf;
             SettingsUI.SetActive(UIActive);
+        }
+        public static bool IsUIEnabled()
+        {
+            return BasePlugin.UseCustomUI.Value;
         }
 
         public static void OnDDValueChanged(TMP_Dropdown origin)
@@ -104,6 +109,8 @@ namespace KillBind.Patches
             [HarmonyPostfix]
             public static void ExecOnStart_Menu() //Create the UI on Start
             {
+                if (!IsUIEnabled()) { return; }
+
                 CreateUI();
                 ConfigureUI();
             }
@@ -112,6 +119,8 @@ namespace KillBind.Patches
             [HarmonyPostfix]
             public static void OnEnable(GameObject enablePanel) //Show toggle when in Settings
             {
+                if (!IsUIEnabled()) { return; }
+
                 if (enablePanel.name == "SettingsPanel")
                 {
                     MenuToggleButton.SetActive(true);
@@ -123,6 +132,8 @@ namespace KillBind.Patches
             [HarmonyPostfix]
             public static void OnDisable(GameObject enablePanel) //Hide UI when out of Settings
             {
+                if (!IsUIEnabled()) { return; }
+
                 if (enablePanel.name == "SettingsPanel")
                 {
                     MenuToggleButton.SetActive(false);
@@ -138,6 +149,8 @@ namespace KillBind.Patches
             [HarmonyPostfix]
             public static void ExecOnStart_QuickMenu() //Create the UI on Start
             {
+                if (!IsUIEnabled()) { return; }
+
                 CreateUI();
                 ConfigureUI();
             }
@@ -146,6 +159,8 @@ namespace KillBind.Patches
             [HarmonyPostfix]
             public static void OnEnable(GameObject enablePanel) //Show toggle when in Settings
             {
+                if (!IsUIEnabled()) { return; }
+
                 if (enablePanel.name == "SettingsPanel")
                 {
                     MenuToggleButton.SetActive(true);
@@ -157,6 +172,8 @@ namespace KillBind.Patches
             [HarmonyPostfix]
             public static void OnDisable(GameObject enablePanel) //Hide UI when out of Settings
             {
+                if (!IsUIEnabled()) { return; }
+
                 if (enablePanel.name == "SettingsPanel")
                 {
                     MenuToggleButton.SetActive(false);
@@ -168,6 +185,8 @@ namespace KillBind.Patches
             [HarmonyPostfix]
             public static void OnClose() //Hide UI when out of Settings
             {
+                if (!IsUIEnabled()) { return; }
+
                 MenuToggleButton.SetActive(false);
                 SettingsUI.SetActive(false);
             }
