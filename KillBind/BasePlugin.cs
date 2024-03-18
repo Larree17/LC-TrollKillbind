@@ -7,6 +7,7 @@ using LethalCompanyInputUtils.Api;
 using UnityEngine.InputSystem;
 using System.Reflection;
 using System.IO;
+using KillBind.Patches;
 
 namespace KillBindNS
 {
@@ -32,6 +33,7 @@ namespace KillBindNS
         public static ConfigEntry<bool> ModEnabled;
         public static ConfigEntry<int> DeathCause;
         public static ConfigEntry<int> HeadType;
+        public static ConfigEntry<bool> UseCustomUI;
 
         //Mod Non-Config Vars
         public static KillBind InputActionInstance = new KillBind();
@@ -43,27 +45,35 @@ namespace KillBindNS
             mls = BepInEx.Logging.Logger.CreateLogSource(modGUID);
             mls = Logger;
 
-            //Load AssetBundle
-            ModAssetBundle = AssetBundle.LoadFromFile(Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), "confusified_killbind.ui"));
-            if (ModAssetBundle == null)
-            {
-                mls.LogError("Error while trying to load the AssetBundle.");
-                return;
-            }
-            //Load Prefab
-            Menu = ModAssetBundle.LoadAsset<GameObject>("Assets/KillBindMod/KillbindUI.prefab");
-            if (Menu == null)
-            {
-                mls.LogError("Error while trying to load the prefab.");
-                return;
-            }
-            DontDestroyOnLoad(Menu);
-
             //Set Default Config Values
             SetModConfig();
 
+            //Load AssetBundle
+            if (UseCustomUI.Value)
+            {
+                ModAssetBundle = AssetBundle.LoadFromFile(Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), "confusified_killbind.ui"));
+                if (ModAssetBundle == null)
+                {
+                    mls.LogError("Error while trying to load the AssetBundle.");
+                    return;
+                }
+                //Load Prefab
+                Menu = ModAssetBundle.LoadAsset<GameObject>("Assets/KillBindMod/KillbindUI.prefab");
+                if (Menu == null)
+                {
+                    mls.LogError("Error while trying to load the prefab.");
+                    return;
+                }
+                DontDestroyOnLoad(Menu);
+            }
+
             //Patch All Code
-            _harmony.PatchAll();
+            _harmony.PatchAll(typeof(KillBindPatch));
+            if (UseCustomUI.Value)
+            {
+                _harmony.PatchAll(typeof(UICode.MenuPatches));
+                _harmony.PatchAll(typeof(UICode.QuickMenuPatches));
+            }
             mls.LogInfo($"{modName} {modVersion} has loaded");
         }
 
@@ -79,6 +89,7 @@ namespace KillBindNS
                 "(1) Decapitate (Default) - Your head will be blown off of your body\n" +
                 "(2) Coilhead - Your head will be replaced with a coil"
                 );
+            UseCustomUI = Configuration.Bind<bool>("Mod Settings", "UseCustomUI", true, "Enable the custom UI for this mod (Disabling will also disable the ability to customise the config in-game");
         }
     }
 }

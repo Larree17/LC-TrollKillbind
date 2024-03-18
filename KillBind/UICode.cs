@@ -10,6 +10,7 @@ namespace KillBind.Patches
 {
     public class UICode
     {
+
         public static GameObject MenuToggleButton; //Toggle button that will be found in settings panel
         public static GameObject SettingsUI; //Settings UI of this mod
         public static bool UIActive = false; //State of visibility of UI
