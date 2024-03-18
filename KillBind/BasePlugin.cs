@@ -57,7 +57,7 @@ namespace KillBindNS
                 mls.LogError("Error while trying to load the prefab.");
                 return;
             }
-            Menu.hideFlags = HideFlags.HideAndDontSave;
+            DontDestroyOnLoad(Menu);
 
             //Set Default Config Values
             SetModConfig();
