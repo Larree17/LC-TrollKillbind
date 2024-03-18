@@ -21,10 +21,6 @@ namespace KillBind.Patches
             UIActive = !SettingsUI.activeSelf;
             SettingsUI.SetActive(UIActive);
         }
-        public static bool IsUIEnabled()
-        {
-            return BasePlugin.UseCustomUI.Value;
-        }
 
         public static void OnDDValueChanged(TMP_Dropdown origin)
         {
