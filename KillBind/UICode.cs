@@ -102,10 +102,8 @@ namespace KillBind.Patches
         {
             [HarmonyPatch("Awake")]
             [HarmonyPostfix]
-            public static void ExecOnStart_Menu(MenuManager __instance) //Create the UI on Start
+            public static void ExecOnStart_Menu() //Create the UI on Start
             {
-                
-
                 CreateUI();
                 ConfigureUI();
             }

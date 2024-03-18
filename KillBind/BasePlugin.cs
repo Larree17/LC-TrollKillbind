@@ -23,7 +23,7 @@ namespace KillBindNS
         //Mod Defining Vars
         private const string modGUID = "Confusified.KillBind";
         private const string modName = "Kill Bind";
-        private const string modVersion = "1.2.1";
+        private const string modVersion = "1.2.2";
         private readonly Harmony _harmony = new Harmony(modGUID);
         public static ManualLogSource mls;
 
