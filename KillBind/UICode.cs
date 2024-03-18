@@ -109,8 +109,6 @@ namespace KillBind.Patches
             [HarmonyPostfix]
             public static void ExecOnStart_Menu() //Create the UI on Start
             {
-                if (!IsUIEnabled()) { return; }
-
                 CreateUI();
                 ConfigureUI();
             }
@@ -119,8 +117,6 @@ namespace KillBind.Patches
             [HarmonyPostfix]
             public static void OnEnable(GameObject enablePanel) //Show toggle when in Settings
             {
-                if (!IsUIEnabled()) { return; }
-
                 if (enablePanel.name == "SettingsPanel")
                 {
                     MenuToggleButton.SetActive(true);
@@ -132,8 +128,6 @@ namespace KillBind.Patches
             [HarmonyPostfix]
             public static void OnDisable(GameObject enablePanel) //Hide UI when out of Settings
             {
-                if (!IsUIEnabled()) { return; }
-
                 if (enablePanel.name == "SettingsPanel")
                 {
                     MenuToggleButton.SetActive(false);
@@ -149,8 +143,6 @@ namespace KillBind.Patches
             [HarmonyPostfix]
             public static void ExecOnStart_QuickMenu() //Create the UI on Start
             {
-                if (!IsUIEnabled()) { return; }
-
                 CreateUI();
                 ConfigureUI();
             }
@@ -159,8 +151,6 @@ namespace KillBind.Patches
             [HarmonyPostfix]
             public static void OnEnable(GameObject enablePanel) //Show toggle when in Settings
             {
-                if (!IsUIEnabled()) { return; }
-
                 if (enablePanel.name == "SettingsPanel")
                 {
                     MenuToggleButton.SetActive(true);
@@ -172,8 +162,6 @@ namespace KillBind.Patches
             [HarmonyPostfix]
             public static void OnDisable(GameObject enablePanel) //Hide UI when out of Settings
             {
-                if (!IsUIEnabled()) { return; }
-
                 if (enablePanel.name == "SettingsPanel")
                 {
                     MenuToggleButton.SetActive(false);
@@ -185,8 +173,6 @@ namespace KillBind.Patches
             [HarmonyPostfix]
             public static void OnClose() //Hide UI when out of Settings
             {
-                if (!IsUIEnabled()) { return; }
-
                 MenuToggleButton.SetActive(false);
                 SettingsUI.SetActive(false);
             }

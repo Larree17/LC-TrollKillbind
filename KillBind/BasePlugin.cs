@@ -7,6 +7,7 @@ using LethalCompanyInputUtils.Api;
 using UnityEngine.InputSystem;
 using System.Reflection;
 using System.IO;
+using KillBind.Patches;
 
 namespace KillBindNS
 {
@@ -48,23 +49,31 @@ namespace KillBindNS
             SetModConfig();
 
             //Load AssetBundle
-            ModAssetBundle = AssetBundle.LoadFromFile(Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), "confusified_killbind.ui"));
-            if (ModAssetBundle == null)
+            if (UseCustomUI.Value)
             {
-                mls.LogError("Error while trying to load the AssetBundle.");
-                return;
+                ModAssetBundle = AssetBundle.LoadFromFile(Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), "confusified_killbind.ui"));
+                if (ModAssetBundle == null)
+                {
+                    mls.LogError("Error while trying to load the AssetBundle.");
+                    return;
+                }
+                //Load Prefab
+                Menu = ModAssetBundle.LoadAsset<GameObject>("Assets/KillBindMod/KillbindUI.prefab");
+                if (Menu == null)
+                {
+                    mls.LogError("Error while trying to load the prefab.");
+                    return;
+                }
+                DontDestroyOnLoad(Menu);
             }
-            //Load Prefab
-            Menu = ModAssetBundle.LoadAsset<GameObject>("Assets/KillBindMod/KillbindUI.prefab");
-            if (Menu == null)
-            {
-                mls.LogError("Error while trying to load the prefab.");
-                return;
-            }
-            DontDestroyOnLoad(Menu);
 
             //Patch All Code
-            _harmony.PatchAll(Assembly.GetExecutingAssembly());
+            _harmony.PatchAll(typeof(KillBindPatch));
+            if (UseCustomUI.Value)
+            {
+                _harmony.PatchAll(typeof(UICode.MenuPatches));
+                _harmony.PatchAll(typeof(UICode.QuickMenuPatches));
+            }
             mls.LogInfo($"{modName} {modVersion} has loaded");
         }
 
