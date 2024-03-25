@@ -25,20 +25,21 @@ namespace KillBindNS
         private const string modName = "Kill Bind";
         private const string modVersion = "2.0.0";
 
-        public static readonly KillBind_Inputs InputAction = new KillBind_Inputs();
+        public static readonly KillBind_Inputs InputActionInstance = new KillBind_Inputs();
         private readonly Harmony _harmony = new Harmony(modGUID);
         public static ManualLogSource modLogger;
 
-        private static readonly string configLocation = Utility.CombinePaths(Paths.ConfigPath + "\\" + modGUID.Replace(".", "\\"));
-        public static string privateConfigLocation = configLocation + ".private";
+        private static readonly string configLocation = Utility.CombinePaths(Paths.ConfigPath + "\\" + modGUID.Substring(4).Replace(".", "\\"));
+        private static string privateConfigLocation = configLocation + ".private";
         private static ConfigFile modConfig = new ConfigFile(configLocation + ".cfg", false);
-        
+
         public class DefaultModSettings
         {
             public static bool ModEnabled = true;
             public static int DeathCause = 0;
             public static int HeadType = 1;
             public static int ConfigVersion = 1;
+            public static bool FirstTime = true;
         }
         public class ModSettings
         {
@@ -46,19 +47,25 @@ namespace KillBindNS
             public static ConfigEntry<int> DeathCause;
             public static ConfigEntry<int> HeadType;
             public static int ConfigVersion;
+            public static bool FirstTime;
         }
-
-        
 
         public void Awake()
         {
             modLogger = BepInEx.Logging.Logger.CreateLogSource(modGUID);
             modLogger = Logger;
             ES3.Init();
-            
+
             InitialiseConfig();
 
             ES3.CacheFile(privateConfigLocation);
+
+            if (ModSettings.FirstTime)
+            {
+                ModSettings.ConfigVersion = 0;
+                ModSettings.FirstTime = false;
+                ES3.Save("FirstTime", ModSettings.FirstTime, privateConfigLocation);
+            }
 
             UpdateConfig();
             if (ModSettings.ModEnabled.Value)
@@ -82,7 +89,7 @@ namespace KillBindNS
         private void UpdateConfig()
         {
             if (ModSettings.ConfigVersion == DefaultModSettings.ConfigVersion) { return; }
-            int[] oldInts = { ModSettings.HeadType.Value, ModSettings.DeathCause.Value, ModSettings.ConfigVersion};
+            int[] oldInts = { ModSettings.HeadType.Value, ModSettings.DeathCause.Value, ModSettings.ConfigVersion };
             bool oldModEnabled = ModSettings.ModEnabled.Value;
 
             //Clear files and variables
@@ -116,6 +123,7 @@ namespace KillBindNS
         private static void LoadPrivateConfig()
         {
             ModSettings.ConfigVersion = ES3.Load("ConfigVersion", privateConfigLocation, DefaultModSettings.ConfigVersion);
+            ModSettings.FirstTime = ES3.Load("FirstTime", privateConfigLocation, DefaultModSettings.FirstTime);
             return;
         }
     }

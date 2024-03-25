@@ -1,8 +1,10 @@
-﻿using GameNetcodeStuff;
+﻿using DunGen;
+using GameNetcodeStuff;
 using HarmonyLib;
-using KillBindNS;
 using System;
+using System.Collections;
 using UnityEngine;
+using UnityEngine.InputSystem;
 using static KillBindNS.Initialise;
 
 namespace KillBind.Patches
@@ -10,17 +12,51 @@ namespace KillBind.Patches
     [HarmonyPatch(typeof(PlayerControllerB))]
     public class KillBindHandler
     {
-        [HarmonyPatch("LateUpdate")]
-        [HarmonyPrefix]
-        public static void OnPressKill(PlayerControllerB __instance)
-        {
-            if (ModSettings.ModEnabled.Value && Initialise.InputActionInstance.ExplodeKey.triggered && __instance == GameNetworkManager.Instance.localPlayerController && !__instance.isPlayerDead && !__instance.isTypingChat && !HUDManager.Instance.typingIndicator.enabled && (!UnityEngine.Object.FindObjectOfType<Terminal>().terminalInUse && !__instance.inTerminalMenu))
-            {
-                if (Initialise.DeathCause.Value > Enum.GetValues(typeof(CauseOfDeath)).Length || Initialise.DeathCause.Value < 0) { Initialise.DeathCause.Value = (int)Initialise.DeathCause.DefaultValue; Initialise.mls.LogInfo("Your config for HeadType is invalid, reverting to default"); } //If your choice is invalid, set to default (unknown death cause)
-                if (Initialise.HeadType.Value > 3 || Initialise.HeadType.Value < 0) { Initialise.HeadType.Value = (int)Initialise.HeadType.DefaultValue; Initialise.mls.LogInfo("Your config for HeadType is invalid, reverting to default"); } //If your choice is invalid, set to default (explode head)
+        private static PlayerControllerB PlayerControllerBInstance;
 
-                __instance.KillPlayer(Vector3.zero, true, (CauseOfDeath)Initialise.DeathCause.Value, Initialise.HeadType.Value);
+        [HarmonyPatch("Awake")]
+        public static void Prefix(PlayerControllerB __instance)
+        {
+            PlayerControllerBInstance = __instance;
+            if (PlayerControllerBInstance != GameNetworkManager.Instance.localPlayerController)
+            {
+                InputActionInstance.ActionKillBind.performed += OnKeyPress;
+                modLogger.LogInfo("KillBind has been bound");
             }
+        }
+
+        public static void OnKeyPress(InputAction.CallbackContext callbackContext)
+        {
+            //Check if situation is valid
+            if (!callbackContext.performed) { modLogger.LogInfo($"1 {callbackContext.action.name}"); return; };
+            if (PlayerControllerBInstance != GameNetworkManager.Instance.localPlayerController) { modLogger.LogInfo("2"); return; };
+            if (PlayerControllerBInstance.isPlayerDead) { modLogger.LogInfo("3"); return; };
+            if (HUDManager.Instance.typingIndicator.enabled || PlayerControllerBInstance.isTypingChat) { modLogger.LogInfo("4"); return; };
+            if (UnityEngine.Object.FindObjectOfType<Terminal>().terminalInUse && PlayerControllerBInstance.inTerminalMenu) { modLogger.LogInfo("5"); return; };
+
+            //Check if current config is valid
+            if (ModSettings.DeathCause.Value > Enum.GetValues(typeof(CauseOfDeath)).Length || ModSettings.DeathCause.Value < 0) //If your choice is invalid, set to default (unknown death cause)
+            {
+                ModSettings.DeathCause.Value = (int)ModSettings.DeathCause.DefaultValue;
+                modLogger.LogInfo("Your config for HeadType is invalid, reverting to default");
+            }
+
+            if (ModSettings.HeadType.Value > 3 || ModSettings.HeadType.Value < 0) //If your choice is invalid, set to default (explode head)
+            {
+                ModSettings.HeadType.Value = (int)ModSettings.HeadType.DefaultValue;
+                modLogger.LogInfo("Your config for HeadType is invalid, reverting to default");
+            }
+
+            CoroutineHelper.Start(Testing());
+            
+            //new WaitForFixedUpdate(); //To fix the body spawning under the map
+            //PlayerControllerBInstance.KillPlayer(Vector3.zero, true, (CauseOfDeath)ModSettings.DeathCause.Value, ModSettings.HeadType.Value);
+        }
+
+        private static IEnumerator Testing()
+        {
+            yield return null; //To fix the body spawning under the map
+            PlayerControllerBInstance.KillPlayer(Vector3.zero, true, (CauseOfDeath)ModSettings.DeathCause.Value, ModSettings.HeadType.Value);
         }
     }
 }

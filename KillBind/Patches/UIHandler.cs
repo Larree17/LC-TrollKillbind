@@ -1,4 +1,4 @@
-﻿
+﻿using static KillBindNS.Initialise;
 
 namespace KillBind.Patches
 {
