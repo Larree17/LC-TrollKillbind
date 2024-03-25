@@ -21,7 +21,7 @@ namespace KillBind.Patches
             if (PlayerControllerBInstance != GameNetworkManager.Instance.localPlayerController)
             {
                 InputActionInstance.ActionKillBind.performed += OnKeyPress;
-                modLogger.LogInfo("KillBind has been bound");
+                modLogger.LogInfo("KillBind has been bound"); // Don't have to worry about unbinding it, it is taken care of in OnKeyPress (with an if statement)
             }
         }
 
@@ -47,15 +47,13 @@ namespace KillBind.Patches
                 modLogger.LogInfo("Your config for HeadType is invalid, reverting to default");
             }
 
-            CoroutineHelper.Start(Testing());
-            
-            //new WaitForFixedUpdate(); //To fix the body spawning under the map
-            //PlayerControllerBInstance.KillPlayer(Vector3.zero, true, (CauseOfDeath)ModSettings.DeathCause.Value, ModSettings.HeadType.Value);
+            //Run KillPlayer
+            CoroutineHelper.Start(KillNextUpdate());
         }
 
-        private static IEnumerator Testing()
+        private static IEnumerator KillNextUpdate()
         {
-            yield return null; //To fix the body spawning under the map
+            yield return null; //To fix the body spawning under the map, pauses until the next update cycle
             PlayerControllerBInstance.KillPlayer(Vector3.zero, true, (CauseOfDeath)ModSettings.DeathCause.Value, ModSettings.HeadType.Value);
         }
     }

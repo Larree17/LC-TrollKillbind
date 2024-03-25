@@ -82,8 +82,8 @@ namespace KillBindNS
         {
             LoadPrivateConfig();
             ModSettings.ModEnabled = modConfig.Bind<bool>("Mod Settings", "Enabled", true, "Toggle the mod");
-            ModSettings.DeathCause = modConfig.Bind<int>("Mod Settings", "DeathType", 0, "Decide what cause of death you will have when pressing your kill bind");
-            ModSettings.HeadType = modConfig.Bind<int>("Mod Settings", "HeadType", 1, "Decide what will happen with your head");
+            ModSettings.DeathCause = modConfig.Bind<int>("Mod Settings", "DeathType", 0, "Cause of Death your ragdoll will have");
+            ModSettings.HeadType = modConfig.Bind<int>("Mod Settings", "HeadType", 1, "Type of head your ragdoll will have");
         }
 
         private void UpdateConfig()
