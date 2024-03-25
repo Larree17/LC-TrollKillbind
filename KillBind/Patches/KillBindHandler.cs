@@ -28,11 +28,11 @@ namespace KillBind.Patches
         public static void OnKeyPress(InputAction.CallbackContext callbackContext)
         {
             //Check if situation is valid
-            if (!callbackContext.performed) { modLogger.LogInfo($"1 {callbackContext.action.name}"); return; };
-            if (PlayerControllerBInstance != GameNetworkManager.Instance.localPlayerController) { modLogger.LogInfo("2"); return; };
-            if (PlayerControllerBInstance.isPlayerDead) { modLogger.LogInfo("3"); return; };
-            if (HUDManager.Instance.typingIndicator.enabled || PlayerControllerBInstance.isTypingChat) { modLogger.LogInfo("4"); return; };
-            if (UnityEngine.Object.FindObjectOfType<Terminal>().terminalInUse && PlayerControllerBInstance.inTerminalMenu) { modLogger.LogInfo("5"); return; };
+            if (!callbackContext.performed) { return; }
+            if (PlayerControllerBInstance != GameNetworkManager.Instance.localPlayerController) { return; };
+            if (PlayerControllerBInstance.isPlayerDead) {return; };
+            if (HUDManager.Instance.typingIndicator.enabled || PlayerControllerBInstance.isTypingChat) { return; };
+            if (UnityEngine.Object.FindObjectOfType<Terminal>().terminalInUse && PlayerControllerBInstance.inTerminalMenu) { return; };
 
             //Check if current config is valid
             if (ModSettings.DeathCause.Value > Enum.GetValues(typeof(CauseOfDeath)).Length || ModSettings.DeathCause.Value < 0) //If your choice is invalid, set to default (unknown death cause)
