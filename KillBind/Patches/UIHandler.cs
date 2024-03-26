@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 using UnityEngine.SceneManagement;
-using static KillBindNS.Initialise;
+using static KillBind.Initialise;
 
 namespace KillBind.Patches
 {
@@ -61,6 +61,7 @@ namespace KillBind.Patches
             }
 
             sceneButton = Object.Instantiate(mButton);
+            return;
         }
 
         private static bool IsInMainMenu()

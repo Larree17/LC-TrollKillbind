@@ -8,7 +8,7 @@ using System.Reflection;
 using System.Text;
 using System.IO;
 
-namespace KillBindNS
+namespace KillBind
 {
     public class KillBind_Inputs : LcInputActions
     {

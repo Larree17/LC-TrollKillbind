@@ -99,6 +99,8 @@
   <ItemGroup>
     <Compile Include="Initialise.cs" />
     <Compile Include="Patches\KillBindHandler.cs" />
+    <Compile Include="Patches\MenuManagerPatch.cs" />
+    <Compile Include="Patches\QuickMenuManagerPatch.cs" />
     <Compile Include="Patches\UIHandler.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

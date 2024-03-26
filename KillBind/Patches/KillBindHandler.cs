@@ -5,7 +5,7 @@ using System;
 using System.Collections;
 using UnityEngine;
 using UnityEngine.InputSystem;
-using static KillBindNS.Initialise;
+using static KillBind.Initialise;
 
 namespace KillBind.Patches
 {
