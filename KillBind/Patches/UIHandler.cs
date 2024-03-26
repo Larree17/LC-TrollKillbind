@@ -32,6 +32,8 @@ namespace KillBind.Patches
         private static Transform sceneButtonTransform;
         private static GameObject sceneSettingsPanel;
         private static Transform sceneSettingsPanelTransform;
+        private static GameObject sceneMenu;
+        private static Transform sceneMenuTransform;
 
         private static Vector3 ButtonLocalPosition = new Vector3(9.0871f, 235.4723f, -4.7728f);
 
@@ -57,7 +59,9 @@ namespace KillBind.Patches
 
             mMenu = MenuContainer.transform.Find("MenuNotification").gameObject;
             mSettingsPanel = MenuContainer.transform.Find("SettingsPanel").gameObject;
+
             //Create button
+
             mSettingsPanelTransform = mSettingsPanel.transform;
             TalkMode = mSettingsPanelTransform.Find("MicSettings").gameObject.transform.Find("TalkMode").gameObject;
 
@@ -70,9 +74,12 @@ namespace KillBind.Patches
             mButtonTextComp.horizontalAlignment = HorizontalAlignmentOptions.Center;
 
             //Create menu
+            mMenu = GameObject.Instantiate(mMenu);
+            mMenu.name = "KillBindMenu";
 
             //Store all in memory
             Object.DontDestroyOnLoad(mButton);
+            Object.DontDestroyOnLoad(mMenu);
             ExistsInMemory = true;
             return;
         }
@@ -105,6 +112,13 @@ namespace KillBind.Patches
             sceneButton.GetComponent<Button>().onClick.AddListener(delegate { onButtonClicked(); });
 
             //Menu code
+            sceneMenu = Object.Instantiate(mMenu);
+            sceneMenuTransform = sceneMenu.transform;
+            sceneMenuTransform.SetParent(sceneSettingsPanelTransform.parent);
+            sceneMenuTransform.SetAsLastSibling(); //Avoid overlapping
+            sceneMenuTransform.localPosition = sceneSettingsPanelTransform.parent.localPosition;
+            sceneMenuTransform.rotation = new Quaternion(0, 0, 0, 0);
+            sceneMenuTransform.localScale = Vector3.one;
 
             return;
         }
