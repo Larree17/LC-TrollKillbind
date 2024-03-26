@@ -20,7 +20,9 @@ namespace KillBind.Patches
         private static GameObject mSettingsPanel;
         private static Transform mSettingsPanelTransform;
 
-        //Both
+        private static string textTitle = "Kill Bind Settings";
+
+        //Shared
 
         private static bool ExistsInMemory = false;
 
@@ -38,13 +40,16 @@ namespace KillBind.Patches
         private static GameObject sceneMenu;
         private static Transform sceneMenuTransform;
         private static GameObject sceneMenuButton;
+        private static GameObject sceneMenuPanel;
 
         private static Vector3 ButtonLocalPosition = new Vector3(9.0871f, 235.4723f, -4.7728f);
+        private static Quaternion zeroRotation = new Quaternion(0, 0, 0, 0);
 
-        /* Copy TalkMode (put in SettingsPanel)
-         * Remove SettingsOption
-         * Add own button functionality
-         * Create UI background from box around mic settings (unsure) (set as last sibling) (put in SettingsPanel)
+        /* Copy TalkMode (put in SettingsPanel) (done)
+         * Remove SettingsOption (done)
+         * Add own button functionality (done)
+         * Create UI background from box around mic settings (unsure) (set as last sibling) (put in SettingsPanel) (done)
+         * fix image/background not being visible masking the rest of the menu
          * Use dropdowns for HeadType and DeathCause (maybe code from slider mod)
          * voilà
          */
@@ -52,14 +57,8 @@ namespace KillBind.Patches
         public static void CreateInMemory()
         {
             if (ExistsInMemory) { return; } //To avoid potential memory leaks
-            if (IsInMainMenu())
-            {
-                MenuContainer = GameObject.Find("Canvas").gameObject.transform.Find("MenuContainer").gameObject;
-            }
-            else
-            {
-                MenuContainer = GameObject.Find("Systems").gameObject.transform.Find("UI").gameObject.transform.Find("Canvas").gameObject.transform.Find("QuickMenu").gameObject;  //Shouldn't be needed
-            }
+
+            MenuContainer = GetSettingsPanel();
 
             mMenu = MenuContainer.transform.Find("MenuNotification").gameObject;
             mSettingsPanel = MenuContainer.transform.Find("SettingsPanel").gameObject;
@@ -74,7 +73,7 @@ namespace KillBind.Patches
             GameObject.DestroyImmediate(mButton.GetComponent<SettingsOption>());
 
             mButtonTextComp = mButton.transform.Find("Text").gameObject.transform.GetComponent<TextMeshProUGUI>();
-            mButtonTextComp.text = "Kill Bind Settings";
+            mButtonTextComp.text = textTitle;
             mButtonTextComp.horizontalAlignment = HorizontalAlignmentOptions.Center;
 
             //Create menu
@@ -92,7 +91,7 @@ namespace KillBind.Patches
 
             mMenuText = mMenuPanel.transform.Find("NotificationText").gameObject;
 
-            mMenuText.GetComponent<TextMeshProUGUI>().text = "Kill Bind Settings";
+            mMenuText.GetComponent<TextMeshProUGUI>().text = textTitle;
             mMenuText.transform.localPosition = new Vector3(0, 80f, -3f);
 
             //Store all in memory
@@ -105,14 +104,8 @@ namespace KillBind.Patches
         public static void CreateInScene()
         {
             if (!ExistsInMemory) { CreateInMemory(); return; } //If it isn't in memory, create one in memory
-            if (IsInMainMenu())
-            {
-                MenuContainer = GameObject.Find("Canvas").gameObject.transform.Find("MenuContainer").gameObject;
-            }
-            else
-            {
-                MenuContainer = GameObject.Find("Systems").gameObject.transform.Find("UI").gameObject.transform.Find("Canvas").gameObject.transform.Find("QuickMenu").gameObject;
-            }
+
+            MenuContainer = GetSettingsPanel();
 
             sceneSettingsPanel = MenuContainer.transform.Find("SettingsPanel").gameObject;
             sceneSettingsPanelTransform = sceneSettingsPanel.transform;
@@ -121,40 +114,52 @@ namespace KillBind.Patches
 
             //Button code
             sceneButton = Object.Instantiate(mButton);
+            sceneButton.SetActive(true);
 
             sceneButtonTransform = sceneButton.transform;
             sceneButtonTransform.SetParent(sceneSettingsPanelTransform);
             sceneButtonTransform.SetAsFirstSibling(); //Avoid overlapping
             sceneButtonTransform.localPosition = ButtonLocalPosition;
-            sceneButtonTransform.rotation = new Quaternion(0, 0, 0, 0);
+            sceneButtonTransform.rotation = zeroRotation;
             sceneButtonTransform.localScale = Vector3.one;
-            //modLogger.LogInfo("Created button");
 
             //Menu code
             sceneMenu = Object.Instantiate(mMenu);
             sceneMenu.SetActive(false);
 
             sceneMenuTransform = sceneMenu.transform;
-            sceneMenuTransform.SetParent(sceneSettingsPanelTransform.parent);
+            sceneMenuTransform.SetParent(MenuContainer.transform);
             sceneMenuTransform.SetAsLastSibling(); //Avoid overlapping
-            sceneMenuTransform.localPosition = sceneSettingsPanelTransform.parent.transform.localPosition;
-            sceneMenuTransform.rotation = new Quaternion(0, 0, 0, 0);
+            sceneMenuTransform.localPosition = MenuContainer.transform.localPosition;
+            sceneMenuTransform.rotation = zeroRotation;
             sceneMenuTransform.localScale = Vector3.one;
 
-            sceneMenuButton = sceneMenuTransform.Find("Panel").gameObject.transform.Find("ResponseButton").gameObject;
-            //modLogger.LogInfo("Created menu");
+            sceneMenuPanel = sceneMenuTransform.Find("Panel").gameObject;
+
+            sceneMenuButton = sceneMenuPanel.transform.Find("ResponseButton").gameObject;
 
             //Add listeners
-            sceneButton.GetComponent<Button>().onClick.AddListener(delegate { onButtonClicked(true); });
-            sceneMenuButton.GetComponent<Button>().onClick.AddListener(delegate { onButtonClicked(false); });
-            //modLogger.LogInfo("Added all listeners");
+            sceneButton.GetComponent<Button>().onClick.AddListener(delegate { OnButtonClicked(true); });
+            sceneMenuButton.GetComponent<Button>().onClick.AddListener(delegate { OnButtonClicked(false); });
             return;
         }
 
-        private static void onButtonClicked(bool setActive)
+        private static void OnButtonClicked(bool setActive)
         {
             MenuManagerPatch.MenuManagerInstance.PlayConfirmSFX();
             sceneMenu.SetActive(setActive);
+        }
+
+        private static GameObject GetSettingsPanel()
+        {
+            if (IsInMainMenu())
+            {
+                return GameObject.Find("Canvas").gameObject.transform.Find("MenuContainer").gameObject;
+            }
+            else
+            {
+                return GameObject.Find("Systems").gameObject.transform.Find("UI").gameObject.transform.Find("Canvas").gameObject.transform.Find("QuickMenu").gameObject;
+            }
         }
 
         private static bool IsInMainMenu()
