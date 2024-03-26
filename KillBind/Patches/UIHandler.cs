@@ -14,6 +14,7 @@ namespace KillBind.Patches
         private static TextMeshProUGUI mButtonTextComp;
 
         private static GameObject mSettingsPanel;
+        private static Transform mSettingsPanelTransform;
 
         //Both
 
@@ -21,13 +22,13 @@ namespace KillBind.Patches
 
         private static GameObject TalkMode;
         private static Transform TalkModeTransform;
-        private static Transform MicSettingsTransform;
 
         //Scene
 
         private static GameObject sceneButton;
         private static Transform sceneButtonTransform;
         private static GameObject sceneSettingsPanel;
+        private static Transform sceneSettingsPanelTransform;
 
         private static Vector3 MainMenuPositionOffset = new Vector3(53.369f, 7.19f, 0);
         private static Vector3 QuickMenuOffsetScale = new Vector3(0.05714f, 0.06875f, 0); //for easier changes (maybe do it better sometime soon, with screen res n stuff)
@@ -54,17 +55,15 @@ namespace KillBind.Patches
                 mSettingsPanel = GameObject.Find("Systems").gameObject.transform.Find("UI").gameObject.transform.Find("Canvas").gameObject.transform.Find("QuickMenu").gameObject.transform.Find("SettingsPanel").gameObject; //Shouldn't be needed
             }
             //Create button
-            MicSettingsTransform = mSettingsPanel.transform.Find("MicSettings").gameObject.transform;
-            TalkMode = MicSettingsTransform.Find("TalkMode").gameObject;
+            mSettingsPanelTransform = mSettingsPanel.transform;
+            TalkMode = mSettingsPanelTransform.Find("MicSettings").gameObject.transform.Find("TalkMode").gameObject;
             TalkModeTransform = TalkMode.transform;
 
             mButton = GameObject.Instantiate(TalkMode);
             mButton.name = "KillBindButton";
             GameObject.DestroyImmediate(mButton.GetComponent<SettingsOption>());
 
-            mButtonTransform = mButton.transform;
-
-            mButtonTextComp = mButtonTransform.Find("Text").gameObject.transform.GetComponent<TextMeshProUGUI>();
+            mButtonTextComp = mButton.transform.Find("Text").gameObject.transform.GetComponent<TextMeshProUGUI>();
             mButtonTextComp.text = "Kill Bind Settings";
             mButtonTextComp.horizontalAlignment = HorizontalAlignmentOptions.Center;
 
@@ -82,6 +81,7 @@ namespace KillBind.Patches
 
             sceneButton = Object.Instantiate(mButton);
             sceneButtonTransform = sceneButton.transform;
+
             if (IsInMainMenu())
             {
                 //1051.631 627.0407 -35.4911 (MicSettings)
@@ -94,13 +94,14 @@ namespace KillBind.Patches
                 sceneSettingsPanel = GameObject.Find("Systems").gameObject.transform.Find("UI").gameObject.transform.Find("Canvas").gameObject.transform.Find("QuickMenu").gameObject.transform.Find("SettingsPanel").gameObject;
                 currentOffset = QuickMenuPositionOffset;
             }
-            MicSettingsTransform = mSettingsPanel.transform.Find("MicSettings").gameObject.transform;
-            TalkMode = MicSettingsTransform.Find("TalkMode").gameObject;
+            sceneSettingsPanelTransform = sceneSettingsPanel.transform;
+
+            TalkMode = sceneSettingsPanelTransform.Find("MicSettings").gameObject.transform.Find("TalkMode").gameObject;
             TalkModeTransform = TalkMode.transform;
 
-            sceneButtonTransform.SetParent(sceneSettingsPanel.transform);
+            sceneButtonTransform.SetParent(sceneSettingsPanelTransform);
             sceneButtonTransform.SetAsFirstSibling(); //Avoid overlapping
-            sceneButtonTransform.position = MicSettingsTransform.position + currentOffset;
+            sceneButtonTransform.localPosition = new Vector3(9.0871f, 235.4723f, -4.7728f);
             sceneButtonTransform.rotation = new Quaternion(0, 0, 0, 0);
             sceneButtonTransform.localScale = new Vector3(1f, 1f, 1f);
 
