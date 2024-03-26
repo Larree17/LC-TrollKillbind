@@ -20,7 +20,6 @@ namespace KillBindNS
     [BepInDependency("com.rune580.LethalCompanyInputUtils", BepInDependency.DependencyFlags.HardDependency)]
     public class Initialise : BaseUnityPlugin
     {
-
         private const string modGUID = "com.Confusified.KillBind";
         private const string modName = "Kill Bind";
         private const string modVersion = "2.0.0";
@@ -41,6 +40,7 @@ namespace KillBindNS
             public static int ConfigVersion = 1;
             public static bool FirstTime = true;
         }
+
         public class ModSettings
         {
             public static ConfigEntry<bool> ModEnabled;

@@ -5,6 +5,14 @@ namespace KillBind.Patches
     public class UIHandler
     {
         private bool ExistsInMemory;
-        private int memorySlider;
+        private int memory;
+
+        public static void CreateInMemory()
+        {
+        }
+
+        public static void CreateInScene()
+        {
+        }
     }
 }

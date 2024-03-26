@@ -30,7 +30,7 @@ namespace KillBind.Patches
             //Check if situation is valid
             if (!callbackContext.performed) { return; }
             if (PlayerControllerBInstance != GameNetworkManager.Instance.localPlayerController) { return; };
-            if (PlayerControllerBInstance.isPlayerDead) {return; };
+            if (PlayerControllerBInstance.isPlayerDead) { return; };
             if (HUDManager.Instance.typingIndicator.enabled || PlayerControllerBInstance.isTypingChat) { return; };
             if (UnityEngine.Object.FindObjectOfType<Terminal>().terminalInUse && PlayerControllerBInstance.inTerminalMenu) { return; };
 
