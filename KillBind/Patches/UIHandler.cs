@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using TMPro;
+using UnityEngine;
 using UnityEngine.SceneManagement;
 using static KillBind.Initialise;
 
@@ -6,15 +7,29 @@ namespace KillBind.Patches
 {
     public class UIHandler
     {
-        private static bool ExistsInMemory = false;
+        //Memory
+
         private static GameObject mButton;
         private static Transform mButtonTransform;
+        private static TextMeshProUGUI mButtonTextComp;
+
         private static GameObject mSettingsPanel;
+
+        //Both
+
+        private static bool ExistsInMemory = false;
+
         private static GameObject TalkMode;
         private static Transform TalkModeTransform;
-        private static Vector3 positionOffset;
+
+        //Scene
 
         private static GameObject sceneButton;
+        private static Transform sceneButtonTransform;
+        private static GameObject sceneSettingsPanel;
+
+        private static Vector3 positionOffset;
+
         /* Copy TalkMode (put in SettingsPanel)
          * Remove SettingsOption
          * Add own button functionality
@@ -32,17 +47,24 @@ namespace KillBind.Patches
             }
             else
             {
-                mSettingsPanel = GameObject.Find("Systems").gameObject.transform.Find("UI").gameObject.transform.Find("Canvas").gameObject.transform.Find("QuickMenu").gameObject.transform.Find("SettingsPanel").gameObject;
+                mSettingsPanel = GameObject.Find("Systems").gameObject.transform.Find("UI").gameObject.transform.Find("Canvas").gameObject.transform.Find("QuickMenu").gameObject.transform.Find("SettingsPanel").gameObject; //Shouldn't be needed
             }
+            //Create button
             TalkMode = mSettingsPanel.transform.Find("MicSettings").gameObject.transform.Find("TalkMode").gameObject;
             TalkModeTransform = TalkMode.transform;
+
             mButton = GameObject.Instantiate(TalkMode);
-            GameObject.Destroy(mButton.GetComponent<SettingsOption>());
             mButton.name = "KillBindButton";
+            GameObject.Destroy(mButton.GetComponent<SettingsOption>());
+
             mButtonTransform = mButton.transform;
             mButtonTransform.position = TalkModeTransform.position;
 
-            //Code here
+            mButtonTextComp = mButtonTransform.Find("Text").gameObject.transform.GetComponent<TextMeshProUGUI>();
+            mButtonTextComp.text = "Kill Bind Settings";
+            mButtonTextComp.horizontalAlignment = HorizontalAlignmentOptions.Center;
+
+            //Store all in memory
             Object.DontDestroyOnLoad(mButton);
             ExistsInMemory = true;
             return;
@@ -51,16 +73,28 @@ namespace KillBind.Patches
         public static void CreateInScene()
         {
             if (!ExistsInMemory) { CreateInMemory(); return; } //If it isn't in memory, create one in memory
+
+            sceneButton = Object.Instantiate(mButton);
+            sceneButtonTransform = sceneButton.transform;
+
             if (IsInMainMenu())
             {
+                sceneSettingsPanel = GameObject.Find("Canvas").gameObject.transform.Find("MenuContainer").gameObject.transform.Find("SettingsPanel").gameObject;
                 positionOffset = new Vector3(36f, 14f, 0f);
             }
             else
             {
+                sceneSettingsPanel = GameObject.Find("Systems").gameObject.transform.Find("UI").gameObject.transform.Find("Canvas").gameObject.transform.Find("QuickMenu").gameObject.transform.Find("SettingsPanel").gameObject;
                 positionOffset = new Vector3(2f, 0.9625f, 0f);
             }
 
-            sceneButton = Object.Instantiate(mButton);
+            TalkMode = sceneSettingsPanel.transform.Find("MicSettings").gameObject.transform.Find("TalkMode").gameObject;
+            TalkModeTransform = TalkMode.transform;
+
+            sceneButtonTransform.SetParent(sceneSettingsPanel.transform);
+            sceneButtonTransform.SetAsFirstSibling(); //Avoid overlapping
+            sceneButtonTransform.position = TalkModeTransform.position + positionOffset;
+
             return;
         }
 
