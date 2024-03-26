@@ -64,6 +64,8 @@ namespace KillBind.Patches
             mButtonTextComp.text = "Kill Bind Settings";
             mButtonTextComp.horizontalAlignment = HorizontalAlignmentOptions.Center;
 
+            //Create menu
+
             //Store all in memory
             Object.DontDestroyOnLoad(mButton);
             ExistsInMemory = true;
@@ -94,6 +96,7 @@ namespace KillBind.Patches
             sceneButtonTransform.SetParent(sceneSettingsPanel.transform);
             sceneButtonTransform.SetAsFirstSibling(); //Avoid overlapping
             sceneButtonTransform.position = TalkModeTransform.position + positionOffset;
+            sceneButtonTransform.localScale = new Vector3(1f, 1f, 1f);
 
             return;
         }
