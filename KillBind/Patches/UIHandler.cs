@@ -146,7 +146,7 @@ namespace KillBind.Patches
 
         private static void OnButtonClicked(bool setActive)
         {
-            MenuManagerPatch.MenuManagerInstance.PlayConfirmSFX();
+            MenuManagerPatch.MenuManagerInstance.MenuAudio.PlayOneShot(GameNetworkManager.Instance.buttonSelectSFX);
             sceneMenu.SetActive(setActive);
         }
 
