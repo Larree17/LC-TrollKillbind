@@ -14,6 +14,7 @@ namespace KillBind.Patches
         private static Transform TalkModeTransform;
         private static Vector3 positionOffset;
 
+        private static GameObject sceneButton;
         /* Copy TalkMode (put in SettingsPanel)
          * Remove SettingsOption
          * Add own button functionality
@@ -58,6 +59,8 @@ namespace KillBind.Patches
             {
                 positionOffset = new Vector3(2f, 0.9625f, 0f);
             }
+
+            sceneButton = Object.Instantiate(mButton);
         }
 
         private static bool IsInMainMenu()
