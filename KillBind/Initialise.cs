@@ -29,7 +29,7 @@ namespace KillBind
         public static ManualLogSource modLogger;
 
         private static readonly string configLocation = Utility.CombinePaths(Paths.ConfigPath + "\\" + modGUID.Substring(4).Replace(".", "\\"));
-        private static string privateConfigLocation = configLocation + ".private";
+        private static readonly string privateConfigLocation = configLocation + ".private";
         private static ConfigFile modConfig = new ConfigFile(configLocation + ".cfg", false);
 
         public class DefaultModSettings

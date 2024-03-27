@@ -1,4 +1,6 @@
-﻿using TMPro;
+﻿using System;
+using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using static KillBind.Initialise;
@@ -10,7 +12,7 @@ namespace KillBind.Patches
         //Variables
 
         //TO DO: MERGE ALL MEMORY AND SCENE VARIABLES INTO ONE
-        //and maybe the code for creating the dropdowns into a method (only the property changes that both dropdowns have)
+        //and maybe the code for creating the dropdowns into a method (only for the property changes that both dropdowns have)
 
         //Memory
 
@@ -20,12 +22,14 @@ namespace KillBind.Patches
         private static GameObject mDeathDropdown;
         private static Transform mDeathDropdownTransform;
         private static GameObject mDeathDropdownText;
+        private static TMP_Dropdown DeathDropdownComponent;
         private static readonly Vector3 DeathDropdownLocalPosition = new Vector3(54.4909f, 7.9495f, -0.9875f);
         private static readonly Vector3 DeathDropdownTextLocalPosition = new Vector3(-113.8745f, 0, 1.3978f);
 
         private static GameObject mHeadDropdown;
         private static Transform mHeadDropdownTransform;
         private static GameObject mHeadDropdownText;
+        private static TMP_Dropdown HeadDropdownComponent;
         private static readonly Vector3 HeadDropdownLocalPosition = new Vector3(54.3413f, -26.5335f, 0.5443f);
         private static readonly Vector3 HeadDropdownTextLocalPosition = new Vector3(-100.7262f, 0, -0.3203f); // slightly different so the ':' of both texts align
 
@@ -37,9 +41,9 @@ namespace KillBind.Patches
         private static GameObject mSettingsPanel;
         private static Transform mSettingsPanelTransform;
 
-        private static readonly string textTitle = "KILL BIND SETTINGS";
-        private static readonly string deathcauseTitle = "Cause of death:"; //(Cause of Death enums)
-        private static readonly string headtypeTitle = "Ragdoll type:"; //(Normal, No head, Spring head)
+        private static readonly string textTitle = "KILL BIND SETTINGS"; //all caps to match vanilla
+        private static readonly string deathcauseTitle = "Cause of death:"; // Cause of Death enums
+        private static readonly string headtypeTitle = "Type of head:"; // Normal, Decapitated, Spring head
 
         private static readonly Vector2 MenuSize = new Vector2(273.7733f, 96.7017f);
         private static readonly Vector2 DropdownSize = new Vector2(156, 30);
@@ -49,6 +53,7 @@ namespace KillBind.Patches
         private static bool ExistsInMemory = false;
 
         private static GameObject MenuContainer;
+        private static Array CauseOfDeathValues;
 
         //Scene
 
@@ -65,9 +70,11 @@ namespace KillBind.Patches
 
         //Methods
 
-        public static void CreateInMemory()
+        private static void CreateInMemory()
         {
             if (ExistsInMemory) { return; } //To avoid potential memory leaks
+
+            CauseOfDeathValues = Enum.GetValues(typeof(CauseOfDeath)); //Put result in variable for later use
 
             MenuContainer = GetSettingsPanel();
 
@@ -90,7 +97,10 @@ namespace KillBind.Patches
             mDeathDropdown = GameObject.Instantiate(mDeathDropdown);
             mDeathDropdown.name = "DeathCauseDropdown";
             mDeathDropdown.GetComponent<RectTransform>().sizeDelta = DropdownSize;
-            mDeathDropdown.GetComponent<TMP_Dropdown>().ClearOptions(); //Clear values from FullscreenMode
+
+            DeathDropdownComponent = mDeathDropdown.GetComponent<TMP_Dropdown>();
+            DeathDropdownComponent.ClearOptions(); //Clear values from FullscreenMode
+            DeathDropdownComponent.AddOptions(SetDropdownList(true));
 
             GameObject.DestroyImmediate(mDeathDropdown.GetComponent<SettingsOption>()); //Remove unneeded component
 
@@ -105,10 +115,14 @@ namespace KillBind.Patches
             mDeathDropdownText.transform.localPosition = DeathDropdownTextLocalPosition;
 
             modLogger.LogInfo("deathcause dropdown");
-            //Create Ragdoll Type (HeadType) Dropdown
+            //Create Head Type (HeadType) Dropdown
 
             mHeadDropdown = GameObject.Instantiate(mDeathDropdown);
             mHeadDropdown.name = "HeadTypeDropdown";
+
+            HeadDropdownComponent = mHeadDropdown.GetComponent<TMP_Dropdown>();
+            HeadDropdownComponent.ClearOptions(); //Clear values from DeathCauseDropdown
+            HeadDropdownComponent.AddOptions(SetDropdownList(false));
 
             mHeadDropdownTransform = mHeadDropdown.transform;
             mHeadDropdownTransform.SetParent(mMenuTransform);
@@ -138,7 +152,7 @@ namespace KillBind.Patches
             modLogger.LogInfo("menu title");
             //Store menu in memory
 
-            Object.DontDestroyOnLoad(mMenu);
+            UnityEngine.Object.DontDestroyOnLoad(mMenu);
             ExistsInMemory = true;
             modLogger.LogInfo("Succesfully created and stored the menu in memory");
             return;
@@ -146,14 +160,14 @@ namespace KillBind.Patches
 
         public static void CreateInScene()
         {
-            if (!ExistsInMemory) { CreateInMemory(); } //If it isn't in memory, create one in memory and then also create in scene after
+            if (!ExistsInMemory) { CreateInMemory(); } //If it isn't in memory, create one in memory, then continue creating it in scene
 
             MenuContainer = GetSettingsPanel();
 
             sceneSettingsPanel = MenuContainer.transform.Find("SettingsPanel").gameObject;
             sceneSettingsPanelTransform = sceneSettingsPanel.transform;
 
-            sceneMenu = Object.Instantiate(mMenu);
+            sceneMenu = GameObject.Instantiate(mMenu);
             sceneMenu.SetActive(true);
 
             sceneMenuTransform = sceneMenu.transform;
@@ -163,14 +177,36 @@ namespace KillBind.Patches
             sceneMenuTransform.localScale = NormalScale;
             sceneMenuTransform.SetAsFirstSibling();
 
+            //set start value for dropdowns
+
             TitleMenuTransform = sceneMenuTransform.Find("Title").gameObject.transform; //do this when in scene
             TitleMenuTransform.localPosition = TitleLocalPosition;
             TitleMenuTransform.rotation = zeroRotation;
             TitleMenuTransform.localScale = NormalScale * 0.8144f; //essentially default Display scale
 
             modLogger.LogInfo("Created menu in scene");
-            //stuff that adds function to things
+            //add listeners to dropdowns for value changes
             return;
+        }
+
+        private static List<string> SetDropdownList(bool isCauseOfDeathDropdown)
+        {
+            List<string> dropdownList = new List<string> { "Normal", "Decapitated", "Spring head" };
+
+            if (isCauseOfDeathDropdown)
+            {
+                dropdownList.Clear(); //Remove preset values
+
+                foreach (CauseOfDeath enumValue in CauseOfDeathValues)
+                {
+                    dropdownList.Add(enumValue.ToString());
+                }
+                return dropdownList;
+            }
+            else //if not Cause of Death, return preset list (list for Head Type)
+            {
+                return dropdownList;
+            }
         }
 
         private static GameObject GetSettingsPanel()
