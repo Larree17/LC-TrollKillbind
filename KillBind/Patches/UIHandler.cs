@@ -13,8 +13,8 @@ namespace KillBind.Patches
 
         //TO DO: merge the code for creating the dropdowns into a method (only for the property changes that both dropdowns have)
 
-        private static int UnsetDeathCause = ModSettings.DeathCause.Value;
-        private static int UnsetHeadType = ModSettings.HeadType.Value;
+        public static int UnsetDeathCause = ModSettings.DeathCause.Value;
+        public static int UnsetHeadType = ModSettings.HeadType.Value;
 
         private static GameObject MenuContainer;
 
@@ -28,17 +28,17 @@ namespace KillBind.Patches
         private static readonly Vector3 MenuLocalPosition = new Vector3(-158.3053f, 93.1761f, 3.5f);
         private static readonly Vector2 MenuSize = new Vector2(273.7733f, 96.7017f);
 
-        private static GameObject DeathDropdown;
-        private static Transform DeathDropdownTransform;
+        public static GameObject DeathDropdown;
+        public static Transform DeathDropdownTransform;
         private static GameObject DeathDropdownText;
-        private static TMP_Dropdown DeathDropdownComponent;
+        public static TMP_Dropdown DeathDropdownComponent;
         private static readonly Vector3 DeathDropdownLocalPosition = new Vector3(54.4909f, 7.9495f, -0.9875f);
         private static readonly Vector3 DeathDropdownTextLocalPosition = new Vector3(-113.8745f, 0, 1.3978f);
 
-        private static GameObject HeadDropdown;
-        private static Transform HeadDropdownTransform;
+        public static GameObject HeadDropdown;
+        public static Transform HeadDropdownTransform;
         private static GameObject HeadDropdownText;
-        private static TMP_Dropdown HeadDropdownComponent;
+        public static TMP_Dropdown HeadDropdownComponent;
         private static readonly Vector3 HeadDropdownLocalPosition = new Vector3(54.3413f, -26.5335f, 0.5443f);
         private static readonly Vector3 HeadDropdownTextLocalPosition = new Vector3(-100.7262f, 0, -0.3203f); // slightly different so the ':' of both texts align
 
