@@ -10,7 +10,6 @@ namespace KillBind.Patches
         [HarmonyPostfix]
         public static void OnStart()
         {
-            CreateInMemory(); //if for some reason it ain't there
             CreateInScene();
         }
     }

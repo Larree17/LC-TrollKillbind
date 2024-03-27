@@ -14,7 +14,6 @@ namespace KillBind.Patches
         {
             if (__instance.isInitScene) { return; } //To avoid issues
             MenuManagerInstance = __instance;
-            CreateInMemory();
             CreateInScene();
         }
     }
