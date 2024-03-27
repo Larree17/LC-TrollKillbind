@@ -7,6 +7,14 @@ namespace KillBind.Patches
     [HarmonyPatch(typeof(IngamePlayerSettings))]
     public class IngamePlayerSettingsPatch
     {
+        public static IngamePlayerSettings IngamePlayerSettingsInstance;
+
+        [HarmonyPatch("Awake")]
+        private static void Postfix(IngamePlayerSettings __instance)
+        {
+            IngamePlayerSettingsInstance = __instance;
+        }
+
         [HarmonyPatch("SaveChangedSettings")]
         [HarmonyPostfix]
         private static void OnSaveChanges()

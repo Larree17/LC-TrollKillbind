@@ -211,7 +211,8 @@ namespace KillBind.Patches
 
         private static void ValueUpdateDropdown(TMP_Dropdown targetDropdownComponent)
         {
-            CoroutineHelper.Start(QuickMenuManagerPlaySound());
+            CoroutineHelper.Start(QuickMenuManagerPlaySound()); //Play sound on change
+            SetChangesNotAppliedTextVisible();
 
             if (targetDropdownComponent == DeathDropdownComponent) //if the dropdown is for Cause of Death
             {
@@ -220,6 +221,27 @@ namespace KillBind.Patches
             }
 
             UnsetHeadType = targetDropdownComponent.value;
+            return;
+        }
+
+        private static void SetChangesNotAppliedTextVisible()
+        {
+            TextMeshProUGUI settingsBackButton;
+            string discardText;
+
+            if (IsInMainMenu())
+            {
+                settingsBackButton = MenuManagerPatch.Instance.settingsBackButton;
+                discardText = "DISCARD";
+            }
+            else
+            {
+                settingsBackButton = QuickMenuManagerPatch.Instance.settingsBackButton;
+                discardText = "Discard changes";
+            }
+
+            IngamePlayerSettings.Instance.changesNotApplied = true;
+            settingsBackButton.text = discardText;
             return;
         }
 
