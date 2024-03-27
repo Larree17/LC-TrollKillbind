@@ -231,11 +231,13 @@ namespace KillBind.Patches
 
             if (IsInMainMenu())
             {
+                MenuManagerPatch.Instance.changesNotAppliedText.enabled = true;
                 settingsBackButton = MenuManagerPatch.Instance.settingsBackButton;
                 discardText = "DISCARD";
             }
             else
             {
+                MenuManagerPatch.Instance.changesNotAppliedText.enabled = true;
                 settingsBackButton = QuickMenuManagerPatch.Instance.settingsBackButton;
                 discardText = "Discard changes";
             }
