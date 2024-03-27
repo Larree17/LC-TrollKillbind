@@ -58,8 +58,6 @@ namespace KillBind.Patches
         private static readonly Vector3 NormalScale = Vector3.one;
         private static readonly Quaternion zeroRotation = new Quaternion(0, 0, 0, 0);
 
-        //Scene
-
         //Methods
 
         private static void CreateInMemory()
@@ -76,7 +74,7 @@ namespace KillBind.Patches
             //Create menu
 
             memoryMenu = SettingsPanel.transform.Find("MicSettings").gameObject.transform.Find("BoxFrame").gameObject;
-            memoryMenu = GameObject.Instantiate(Menu);
+            memoryMenu = GameObject.Instantiate(memoryMenu);
             memoryMenu.name = "KillBindMenu";
             memoryMenu.GetComponent<RectTransform>().sizeDelta = MenuSize;
 
@@ -208,11 +206,10 @@ namespace KillBind.Patches
             if (targetDropdownComponent == DeathDropdownComponent) //if the dropdown is for Cause of Death
             {
                 UnsetDeathCause = targetDropdownComponent.value;
-                //ModSettings.DeathCause.Value = targetDropdownComponent.value;
                 return;
             }
+
             UnsetHeadType = targetDropdownComponent.value;
-            //ModSettings.HeadType.Value = targetDropdownComponent.value;
             return;
         }
 
