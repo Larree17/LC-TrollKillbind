@@ -129,9 +129,6 @@ namespace KillBind.Patches
 
             TitleMenuTransform = TitleMenu.transform;
             TitleMenuTransform.SetParent(mMenuTransform);
-            TitleMenuTransform.localPosition = TitleLocalPosition;
-            TitleMenuTransform.rotation = zeroRotation;
-            TitleMenuTransform.localScale = NormalScale * 0.8144f; //essentially default Display scale
 
             TitleMenuComponent = TitleMenu.GetComponent<TextMeshProUGUI>();
             TitleMenuComponent.enableWordWrapping = false;
@@ -165,6 +162,11 @@ namespace KillBind.Patches
             sceneMenuTransform.rotation = zeroRotation;
             sceneMenuTransform.localScale = NormalScale;
             sceneMenuTransform.SetAsFirstSibling();
+
+            TitleMenuTransform = sceneMenuTransform.Find("Title").gameObject.transform; //do this when in scene
+            TitleMenuTransform.localPosition = TitleLocalPosition;
+            TitleMenuTransform.rotation = zeroRotation;
+            TitleMenuTransform.localScale = NormalScale * 0.8144f; //essentially default Display scale
 
             modLogger.LogInfo("Created menu in scene");
             //stuff that adds function to things
