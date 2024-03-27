@@ -11,24 +11,29 @@ namespace KillBind.Patches
     {
         //Variables
 
-        //TO DO: MERGE ALL MEMORY AND SCENE VARIABLES INTO ONE
-        //and maybe the code for creating the dropdowns into a method (only for the property changes that both dropdowns have)
+        //TO DO: merge the code for creating the dropdowns into a method (only for the property changes that both dropdowns have)
 
-        //Memory
+        private static GameObject MenuContainer;
 
-        private static GameObject mMenu;
-        private static Transform mMenuTransform;
+        private static bool ExistsInMemory = false;
 
-        private static GameObject mDeathDropdown;
-        private static Transform mDeathDropdownTransform;
-        private static GameObject mDeathDropdownText;
+        private static Array CauseOfDeathValues;
+
+        private static GameObject Menu;
+        private static Transform MenuTransform;
+        private static readonly Vector3 MenuLocalPosition = new Vector3(-158.3053f, 93.1761f, 3.5f);
+        private static readonly Vector2 MenuSize = new Vector2(273.7733f, 96.7017f);
+
+        private static GameObject DeathDropdown;
+        private static Transform DeathDropdownTransform;
+        private static GameObject DeathDropdownText;
         private static TMP_Dropdown DeathDropdownComponent;
         private static readonly Vector3 DeathDropdownLocalPosition = new Vector3(54.4909f, 7.9495f, -0.9875f);
         private static readonly Vector3 DeathDropdownTextLocalPosition = new Vector3(-113.8745f, 0, 1.3978f);
 
-        private static GameObject mHeadDropdown;
-        private static Transform mHeadDropdownTransform;
-        private static GameObject mHeadDropdownText;
+        private static GameObject HeadDropdown;
+        private static Transform HeadDropdownTransform;
+        private static GameObject HeadDropdownText;
         private static TMP_Dropdown HeadDropdownComponent;
         private static readonly Vector3 HeadDropdownLocalPosition = new Vector3(54.3413f, -26.5335f, 0.5443f);
         private static readonly Vector3 HeadDropdownTextLocalPosition = new Vector3(-100.7262f, 0, -0.3203f); // slightly different so the ':' of both texts align
@@ -36,37 +41,20 @@ namespace KillBind.Patches
         private static GameObject TitleMenu;
         private static Transform TitleMenuTransform;
         private static TextMeshProUGUI TitleMenuComponent;
-        private static readonly Vector3 TitleLocalPosition = new Vector3(-56.2559f, 34.7314f, -1.0344f);
+        private static readonly Vector3 TitleLocalPosition = new Vector3(-68.7573f, 35.4375f, -1.0543f);
 
-        private static GameObject mSettingsPanel;
-        private static Transform mSettingsPanelTransform;
+        private static GameObject SettingsPanel;
+        private static Transform SettingsPanelTransform;
 
         private static readonly string textTitle = "KILL BIND SETTINGS"; //all caps to match vanilla
         private static readonly string deathcauseTitle = "Cause of death:"; // Cause of Death enums
         private static readonly string headtypeTitle = "Type of head:"; // Normal, Decapitated, Spring head
 
-        private static readonly Vector2 MenuSize = new Vector2(273.7733f, 96.7017f);
         private static readonly Vector2 DropdownSize = new Vector2(156, 30);
-
-        //Shared
-
-        private static bool ExistsInMemory = false;
-
-        private static GameObject MenuContainer;
-        private static Array CauseOfDeathValues;
-
-        //Scene
-
-        private static GameObject sceneSettingsPanel;
-        private static Transform sceneSettingsPanelTransform;
-
-        private static GameObject sceneMenu;
-        private static Transform sceneMenuTransform;
-
-        private static readonly Vector3 MenuLocalPosition = new Vector3(-158.3053f, 93.1761f, 3.5f); //new Vector3(43.1f, 176, -2.6f);
-
         private static readonly Vector3 NormalScale = Vector3.one;
         private static readonly Quaternion zeroRotation = new Quaternion(0, 0, 0, 0);
+
+        //Scene
 
         //Methods
 
@@ -78,81 +66,77 @@ namespace KillBind.Patches
 
             MenuContainer = GetSettingsPanel();
 
-            mSettingsPanel = MenuContainer.transform.Find("SettingsPanel").gameObject;
-            mSettingsPanelTransform = mSettingsPanel.transform;
+            SettingsPanel = MenuContainer.transform.Find("SettingsPanel").gameObject;
+            SettingsPanelTransform = SettingsPanel.transform;
 
             //Create menu
 
-            mMenu = mSettingsPanel.transform.Find("MicSettings").gameObject.transform.Find("BoxFrame").gameObject;
-            mMenu = GameObject.Instantiate(mMenu);
-            mMenu.name = "KillBindMenu";
-            mMenu.GetComponent<RectTransform>().sizeDelta = MenuSize;
+            Menu = SettingsPanel.transform.Find("MicSettings").gameObject.transform.Find("BoxFrame").gameObject;
+            Menu = GameObject.Instantiate(Menu);
+            Menu.name = "KillBindMenu";
+            Menu.GetComponent<RectTransform>().sizeDelta = MenuSize;
 
-            mMenuTransform = mMenu.transform;
+            MenuTransform = Menu.transform;
 
-            modLogger.LogInfo("menu");
             //Create Cause of Death Dropdown
 
-            mDeathDropdown = mSettingsPanelTransform.Find("FullscreenMode").gameObject;
-            mDeathDropdown = GameObject.Instantiate(mDeathDropdown);
-            mDeathDropdown.name = "DeathCauseDropdown";
-            mDeathDropdown.GetComponent<RectTransform>().sizeDelta = DropdownSize;
+            DeathDropdown = SettingsPanelTransform.Find("FullscreenMode").gameObject;
+            DeathDropdown = GameObject.Instantiate(DeathDropdown);
+            DeathDropdown.name = "DeathCauseDropdown";
+            DeathDropdown.GetComponent<RectTransform>().sizeDelta = DropdownSize;
 
-            DeathDropdownComponent = mDeathDropdown.GetComponent<TMP_Dropdown>();
+            DeathDropdownComponent = DeathDropdown.GetComponent<TMP_Dropdown>();
             DeathDropdownComponent.ClearOptions(); //Clear values from FullscreenMode
             DeathDropdownComponent.AddOptions(SetDropdownList(true));
 
-            GameObject.DestroyImmediate(mDeathDropdown.GetComponent<SettingsOption>()); //Remove unneeded component
+            GameObject.DestroyImmediate(DeathDropdown.GetComponent<SettingsOption>()); //Remove unneeded component
 
-            mDeathDropdownTransform = mDeathDropdown.transform;
-            mDeathDropdownTransform.SetParent(mMenuTransform);
-            mDeathDropdownTransform.localPosition = DeathDropdownLocalPosition;
-            mDeathDropdownTransform.rotation = zeroRotation;
-            mDeathDropdownTransform.localScale = NormalScale;
+            DeathDropdownTransform = Menu.transform;
+            DeathDropdownTransform.SetParent(MenuTransform);
+            DeathDropdownTransform.localPosition = DeathDropdownLocalPosition;
+            DeathDropdownTransform.rotation = zeroRotation;
+            DeathDropdownTransform.localScale = NormalScale;
 
-            mDeathDropdownText = mDeathDropdownTransform.Find("Label2").gameObject;
-            mDeathDropdownText.GetComponent<TextMeshProUGUI>().text = deathcauseTitle;
-            mDeathDropdownText.transform.localPosition = DeathDropdownTextLocalPosition;
+            DeathDropdownText = DeathDropdownTransform.Find("Label2").gameObject;
+            DeathDropdownText.GetComponent<TextMeshProUGUI>().text = deathcauseTitle;
+            DeathDropdownText.transform.localPosition = DeathDropdownTextLocalPosition;
 
-            modLogger.LogInfo("deathcause dropdown");
             //Create Head Type (HeadType) Dropdown
 
-            mHeadDropdown = GameObject.Instantiate(mDeathDropdown);
-            mHeadDropdown.name = "HeadTypeDropdown";
+            HeadDropdown = GameObject.Instantiate(DeathDropdown);
+            HeadDropdown.name = "HeadTypeDropdown";
 
-            HeadDropdownComponent = mHeadDropdown.GetComponent<TMP_Dropdown>();
+            HeadDropdownComponent = HeadDropdown.GetComponent<TMP_Dropdown>();
             HeadDropdownComponent.ClearOptions(); //Clear values from DeathCauseDropdown
             HeadDropdownComponent.AddOptions(SetDropdownList(false));
 
-            mHeadDropdownTransform = mHeadDropdown.transform;
-            mHeadDropdownTransform.SetParent(mMenuTransform);
-            mHeadDropdownTransform.localPosition = HeadDropdownLocalPosition;
-            mHeadDropdownTransform.rotation = zeroRotation;
-            mHeadDropdownTransform.localScale = NormalScale;
+            HeadDropdownTransform = HeadDropdown.transform;
+            HeadDropdownTransform.SetParent(MenuTransform);
+            HeadDropdownTransform.localPosition = HeadDropdownLocalPosition;
+            HeadDropdownTransform.rotation = zeroRotation;
+            HeadDropdownTransform.localScale = NormalScale;
 
-            mHeadDropdownText = mHeadDropdownTransform.Find("Label2").gameObject;
-            mHeadDropdownText.GetComponent<TextMeshProUGUI>().text = headtypeTitle;
-            mHeadDropdownText.transform.localPosition = HeadDropdownTextLocalPosition;
+            HeadDropdownText = HeadDropdownTransform.Find("Label2").gameObject;
+            HeadDropdownText.GetComponent<TextMeshProUGUI>().text = headtypeTitle;
+            HeadDropdownText.transform.localPosition = HeadDropdownTextLocalPosition;
 
-            modLogger.LogInfo("headtype dropdown");
             //Create Menu Title
 
-            TitleMenu = mSettingsPanelTransform.Find("Headers").gameObject.transform.Find("Display").gameObject;
+            TitleMenu = SettingsPanelTransform.Find("Headers").gameObject.transform.Find("Display").gameObject;
             TitleMenu = GameObject.Instantiate(TitleMenu);
             TitleMenu.name = "Title";
 
             TitleMenuTransform = TitleMenu.transform;
-            TitleMenuTransform.SetParent(mMenuTransform);
+            TitleMenuTransform.SetParent(MenuTransform);
 
             TitleMenuComponent = TitleMenu.GetComponent<TextMeshProUGUI>();
             TitleMenuComponent.enableWordWrapping = false;
             TitleMenuComponent.fontSize = 24;
             TitleMenuComponent.text = textTitle;
 
-            modLogger.LogInfo("menu title");
             //Store menu in memory
 
-            UnityEngine.Object.DontDestroyOnLoad(mMenu);
+            UnityEngine.Object.DontDestroyOnLoad(Menu);
             ExistsInMemory = true;
             modLogger.LogInfo("Succesfully created and stored the menu in memory");
             return;
@@ -164,28 +148,36 @@ namespace KillBind.Patches
 
             MenuContainer = GetSettingsPanel();
 
-            sceneSettingsPanel = MenuContainer.transform.Find("SettingsPanel").gameObject;
-            sceneSettingsPanelTransform = sceneSettingsPanel.transform;
+            SettingsPanel = MenuContainer.transform.Find("SettingsPanel").gameObject;
+            SettingsPanelTransform = SettingsPanel.transform;
 
-            sceneMenu = GameObject.Instantiate(mMenu);
-            sceneMenu.SetActive(true);
+            Menu = GameObject.Instantiate(Menu);
+            Menu.SetActive(true);
 
-            sceneMenuTransform = sceneMenu.transform;
-            sceneMenuTransform.SetParent(sceneSettingsPanelTransform);
-            sceneMenuTransform.localPosition = MenuLocalPosition;
-            sceneMenuTransform.rotation = zeroRotation;
-            sceneMenuTransform.localScale = NormalScale;
-            sceneMenuTransform.SetAsFirstSibling();
+            MenuTransform = Menu.transform;
+            MenuTransform.SetParent(SettingsPanelTransform);
+            MenuTransform.localPosition = MenuLocalPosition;
+            MenuTransform.rotation = zeroRotation;
+            MenuTransform.localScale = NormalScale;
+            MenuTransform.SetAsFirstSibling();
 
-            //set start value for dropdowns
+            DeathDropdownComponent = MenuTransform.Find(DeathDropdown.name).gameObject.GetComponent<TMP_Dropdown>();
+            DeathDropdownComponent.SetValueWithoutNotify(ModSettings.DeathCause.Value);
 
-            TitleMenuTransform = sceneMenuTransform.Find("Title").gameObject.transform; //do this when in scene
+            HeadDropdownComponent = MenuTransform.Find(HeadDropdown.name).gameObject.GetComponent<TMP_Dropdown>();
+            HeadDropdownComponent.SetValueWithoutNotify(ModSettings.HeadType.Value);
+
+            TitleMenuTransform = MenuTransform.Find("Title").gameObject.transform; //do this when in scene
             TitleMenuTransform.localPosition = TitleLocalPosition;
             TitleMenuTransform.rotation = zeroRotation;
             TitleMenuTransform.localScale = NormalScale * 0.8144f; //essentially default Display scale
 
-            modLogger.LogInfo("Created menu in scene");
             //add listeners to dropdowns for value changes
+
+            DeathDropdownComponent.onValueChanged.AddListener(delegate { ValueUpdateDropdown(DeathDropdown); });
+            HeadDropdownComponent.onValueChanged.AddListener(delegate { ValueUpdateDropdown(HeadDropdown); });
+
+            modLogger.LogInfo("Created menu in scene");
             return;
         }
 
@@ -203,10 +195,12 @@ namespace KillBind.Patches
                 }
                 return dropdownList;
             }
-            else //if not Cause of Death, return preset list (list for Head Type)
-            {
-                return dropdownList;
-            }
+
+            return dropdownList; //if not Cause of Death, return preset list (list for Head Type)
+        }
+
+        private static void ValueUpdateDropdown(GameObject targetDropdown)
+        {
         }
 
         private static GameObject GetSettingsPanel()
