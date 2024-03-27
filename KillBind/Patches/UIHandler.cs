@@ -21,24 +21,24 @@ namespace KillBind.Patches
         private static Transform mDeathDropdownTransform;
         private static GameObject mDeathDropdownText;
         private static readonly Vector3 DeathDropdownLocalPosition = new Vector3(54.4909f, 7.9495f, -0.9875f);
-        private static readonly Vector3 DeathDropdownTextLocalPosition = new Vector3(-135.5511f, 0, 1.3978f);
+        private static readonly Vector3 DeathDropdownTextLocalPosition = new Vector3(-113.8745f, 0, 1.3978f);
 
         private static GameObject mHeadDropdown;
         private static Transform mHeadDropdownTransform;
         private static GameObject mHeadDropdownText;
         private static readonly Vector3 HeadDropdownLocalPosition = new Vector3(54.3413f, -26.5335f, 0.5443f);
-        private static readonly Vector3 HeadDropdownTextLocalPosition = new Vector3(-130.3006f, 0, 1.3978f); // slightly different so the ':' of both texts align
+        private static readonly Vector3 HeadDropdownTextLocalPosition = new Vector3(-100.7262f, 0, -0.3203f); // slightly different so the ':' of both texts align
 
         private static GameObject TitleMenu;
         private static Transform TitleMenuTransform;
         private static TextMeshProUGUI TitleMenuComponent;
-        private static readonly Vector3 TitleLocalPosition = new Vector3(-68.2559f, 34.7314f, -1.0344f);
+        private static readonly Vector3 TitleLocalPosition = new Vector3(-56.2559f, 34.7314f, -1.0344f);
 
         private static GameObject mSettingsPanel;
         private static Transform mSettingsPanelTransform;
 
         private static readonly string textTitle = "KILL BIND SETTINGS";
-        private static readonly string deathcauseTitle = "Cause of death"; //(Cause of Death enums)
+        private static readonly string deathcauseTitle = "Cause of death:"; //(Cause of Death enums)
         private static readonly string headtypeTitle = "Ragdoll type:"; //(Normal, No head, Spring head)
 
         private static readonly Vector2 MenuSize = new Vector2(273.7733f, 96.7017f);
@@ -82,8 +82,6 @@ namespace KillBind.Patches
             mMenu.GetComponent<RectTransform>().sizeDelta = MenuSize;
 
             mMenuTransform = mMenu.transform;
-            mMenuTransform.localPosition = MenuLocalPosition;
-            mMenuTransform.localScale = NormalScale;
 
             modLogger.LogInfo("menu");
             //Create Cause of Death Dropdown
@@ -129,16 +127,16 @@ namespace KillBind.Patches
             TitleMenu = GameObject.Instantiate(TitleMenu);
             TitleMenu.name = "Title";
 
-            TitleMenuComponent = TitleMenu.GetComponent<TextMeshProUGUI>();
-            TitleMenuComponent.enableWordWrapping = false;
-            TitleMenuComponent.fontSize = 24;
-            TitleMenuComponent.text = textTitle;
-
             TitleMenuTransform = TitleMenu.transform;
             TitleMenuTransform.SetParent(mMenuTransform);
             TitleMenuTransform.localPosition = TitleLocalPosition;
             TitleMenuTransform.rotation = zeroRotation;
             TitleMenuTransform.localScale = NormalScale;
+
+            TitleMenuComponent = TitleMenu.GetComponent<TextMeshProUGUI>();
+            TitleMenuComponent.enableWordWrapping = false;
+            TitleMenuComponent.fontSize = 21;
+            TitleMenuComponent.text = textTitle;
 
             modLogger.LogInfo("menu title");
             //Store menu in memory
@@ -163,6 +161,9 @@ namespace KillBind.Patches
 
             sceneMenuTransform = sceneMenu.transform;
             sceneMenuTransform.SetParent(sceneSettingsPanelTransform);
+            sceneMenuTransform.localPosition = MenuLocalPosition;
+            sceneMenuTransform.rotation = zeroRotation;
+            sceneMenuTransform.localScale = NormalScale;
             sceneMenuTransform.SetAsFirstSibling();
 
             modLogger.LogInfo("Created menu in scene");
