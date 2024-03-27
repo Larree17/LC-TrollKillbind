@@ -13,12 +13,16 @@ namespace KillBind.Patches
 
         //TO DO: merge the code for creating the dropdowns into a method (only for the property changes that both dropdowns have)
 
+        private static int UnsetDeathCause = ModSettings.DeathCause.Value;
+        private static int UnsetHeadType = ModSettings.HeadType.Value;
+
         private static GameObject MenuContainer;
 
         private static bool ExistsInMemory = false;
 
         private static Array CauseOfDeathValues;
 
+        private static GameObject memoryMenu;
         private static GameObject Menu;
         private static Transform MenuTransform;
         private static readonly Vector3 MenuLocalPosition = new Vector3(-158.3053f, 93.1761f, 3.5f);
@@ -71,12 +75,12 @@ namespace KillBind.Patches
 
             //Create menu
 
-            Menu = SettingsPanel.transform.Find("MicSettings").gameObject.transform.Find("BoxFrame").gameObject;
-            Menu = GameObject.Instantiate(Menu);
-            Menu.name = "KillBindMenu";
-            Menu.GetComponent<RectTransform>().sizeDelta = MenuSize;
+            memoryMenu = SettingsPanel.transform.Find("MicSettings").gameObject.transform.Find("BoxFrame").gameObject;
+            memoryMenu = GameObject.Instantiate(Menu);
+            memoryMenu.name = "KillBindMenu";
+            memoryMenu.GetComponent<RectTransform>().sizeDelta = MenuSize;
 
-            MenuTransform = Menu.transform;
+            MenuTransform = memoryMenu.transform;
 
             //Create Cause of Death Dropdown
 
@@ -91,7 +95,7 @@ namespace KillBind.Patches
 
             GameObject.DestroyImmediate(DeathDropdown.GetComponent<SettingsOption>()); //Remove unneeded component
 
-            DeathDropdownTransform = Menu.transform;
+            DeathDropdownTransform = DeathDropdown.transform;
             DeathDropdownTransform.SetParent(MenuTransform);
             DeathDropdownTransform.localPosition = DeathDropdownLocalPosition;
             DeathDropdownTransform.rotation = zeroRotation;
@@ -136,7 +140,7 @@ namespace KillBind.Patches
 
             //Store menu in memory
 
-            UnityEngine.Object.DontDestroyOnLoad(Menu);
+            UnityEngine.Object.DontDestroyOnLoad(memoryMenu);
             ExistsInMemory = true;
             modLogger.LogInfo("Succesfully created and stored the menu in memory");
             return;
@@ -151,7 +155,7 @@ namespace KillBind.Patches
             SettingsPanel = MenuContainer.transform.Find("SettingsPanel").gameObject;
             SettingsPanelTransform = SettingsPanel.transform;
 
-            Menu = GameObject.Instantiate(Menu);
+            Menu = GameObject.Instantiate(memoryMenu);
             Menu.SetActive(true);
 
             MenuTransform = Menu.transform;
@@ -174,8 +178,8 @@ namespace KillBind.Patches
 
             //add listeners to dropdowns for value changes
 
-            DeathDropdownComponent.onValueChanged.AddListener(delegate { ValueUpdateDropdown(DeathDropdown); });
-            HeadDropdownComponent.onValueChanged.AddListener(delegate { ValueUpdateDropdown(HeadDropdown); });
+            DeathDropdownComponent.onValueChanged.AddListener(delegate { ValueUpdateDropdown(DeathDropdownComponent); });
+            HeadDropdownComponent.onValueChanged.AddListener(delegate { ValueUpdateDropdown(HeadDropdownComponent); });
 
             modLogger.LogInfo("Created menu in scene");
             return;
@@ -199,8 +203,17 @@ namespace KillBind.Patches
             return dropdownList; //if not Cause of Death, return preset list (list for Head Type)
         }
 
-        private static void ValueUpdateDropdown(GameObject targetDropdown)
+        private static void ValueUpdateDropdown(TMP_Dropdown targetDropdownComponent)
         {
+            if (targetDropdownComponent == DeathDropdownComponent) //if the dropdown is for Cause of Death
+            {
+                UnsetDeathCause = targetDropdownComponent.value;
+                //ModSettings.DeathCause.Value = targetDropdownComponent.value;
+                return;
+            }
+            UnsetHeadType = targetDropdownComponent.value;
+            //ModSettings.HeadType.Value = targetDropdownComponent.value;
+            return;
         }
 
         private static GameObject GetSettingsPanel()
@@ -209,10 +222,8 @@ namespace KillBind.Patches
             {
                 return GameObject.Find("Canvas").gameObject.transform.Find("MenuContainer").gameObject;
             }
-            else
-            {
-                return GameObject.Find("Systems").gameObject.transform.Find("UI").gameObject.transform.Find("Canvas").gameObject.transform.Find("QuickMenu").gameObject;
-            }
+
+            return GameObject.Find("Systems").gameObject.transform.Find("UI").gameObject.transform.Find("Canvas").gameObject.transform.Find("QuickMenu").gameObject;
         }
 
         private static bool IsInMainMenu()
@@ -221,6 +232,7 @@ namespace KillBind.Patches
             {
                 return false;
             }
+
             return true;
         }
     }
