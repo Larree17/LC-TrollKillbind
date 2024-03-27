@@ -82,6 +82,8 @@ namespace KillBind.Patches
             mMenu.GetComponent<RectTransform>().sizeDelta = MenuSize;
 
             mMenuTransform = mMenu.transform;
+            mMenuTransform.localPosition = MenuLocalPosition;
+            mMenuTransform.localScale = NormalScale;
 
             modLogger.LogInfo("menu");
             //Create Cause of Death Dropdown
@@ -90,12 +92,15 @@ namespace KillBind.Patches
             mDeathDropdown = GameObject.Instantiate(mDeathDropdown);
             mDeathDropdown.name = "DeathCauseDropdown";
             mDeathDropdown.GetComponent<RectTransform>().sizeDelta = DropdownSize;
+            mDeathDropdown.GetComponent<TMP_Dropdown>().ClearOptions(); //Clear values from FullscreenMode
 
             GameObject.DestroyImmediate(mDeathDropdown.GetComponent<SettingsOption>()); //Remove unneeded component
 
             mDeathDropdownTransform = mDeathDropdown.transform;
             mDeathDropdownTransform.SetParent(mMenuTransform);
             mDeathDropdownTransform.localPosition = DeathDropdownLocalPosition;
+            mDeathDropdownTransform.rotation = zeroRotation;
+            mDeathDropdownTransform.localScale = NormalScale;
 
             mDeathDropdownText = mDeathDropdownTransform.Find("Label2").gameObject;
             mDeathDropdownText.GetComponent<TextMeshProUGUI>().text = deathcauseTitle;
@@ -110,6 +115,8 @@ namespace KillBind.Patches
             mHeadDropdownTransform = mHeadDropdown.transform;
             mHeadDropdownTransform.SetParent(mMenuTransform);
             mHeadDropdownTransform.localPosition = HeadDropdownLocalPosition;
+            mHeadDropdownTransform.rotation = zeroRotation;
+            mHeadDropdownTransform.localScale = NormalScale;
 
             mHeadDropdownText = mHeadDropdownTransform.Find("Label2").gameObject;
             mHeadDropdownText.GetComponent<TextMeshProUGUI>().text = headtypeTitle;
@@ -125,8 +132,13 @@ namespace KillBind.Patches
             TitleMenuComponent = TitleMenu.GetComponent<TextMeshProUGUI>();
             TitleMenuComponent.enableWordWrapping = false;
             TitleMenuComponent.fontSize = 24;
+            TitleMenuComponent.text = textTitle;
 
             TitleMenuTransform = TitleMenu.transform;
+            TitleMenuTransform.SetParent(mMenuTransform);
+            TitleMenuTransform.localPosition = TitleLocalPosition;
+            TitleMenuTransform.rotation = zeroRotation;
+            TitleMenuTransform.localScale = NormalScale;
 
             modLogger.LogInfo("menu title");
             //Store menu in memory
@@ -146,25 +158,15 @@ namespace KillBind.Patches
             sceneSettingsPanel = MenuContainer.transform.Find("SettingsPanel").gameObject;
             sceneSettingsPanelTransform = sceneSettingsPanel.transform;
 
-            //Menu code
-            //TO DO
-            //PixelPerUnitMultiplier = 6.516
-            //BoxFrame scale = (0.52, 0.75, 1)
-            //BoxFrame localPos = (43.1, 176, -2.6)
-            //parent = SettingsPanel
-
             sceneMenu = Object.Instantiate(mMenu);
             sceneMenu.SetActive(true);
 
             sceneMenuTransform = sceneMenu.transform;
             sceneMenuTransform.SetParent(sceneSettingsPanelTransform);
             sceneMenuTransform.SetAsFirstSibling();
-            sceneMenuTransform.localPosition = MenuLocalPosition;
-            sceneMenuTransform.rotation = zeroRotation;
-            sceneMenuTransform.localScale = NormalScale;
 
             modLogger.LogInfo("Created menu in scene");
-            //stuff that adds things yes
+            //stuff that adds function to things
             return;
         }
 
