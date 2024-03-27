@@ -131,11 +131,11 @@ namespace KillBind.Patches
             TitleMenuTransform.SetParent(mMenuTransform);
             TitleMenuTransform.localPosition = TitleLocalPosition;
             TitleMenuTransform.rotation = zeroRotation;
-            TitleMenuTransform.localScale = NormalScale;
+            TitleMenuTransform.localScale = NormalScale * 0.8144f; //essentially default Display scale
 
             TitleMenuComponent = TitleMenu.GetComponent<TextMeshProUGUI>();
             TitleMenuComponent.enableWordWrapping = false;
-            TitleMenuComponent.fontSize = 21;
+            TitleMenuComponent.fontSize = 24;
             TitleMenuComponent.text = textTitle;
 
             modLogger.LogInfo("menu title");
