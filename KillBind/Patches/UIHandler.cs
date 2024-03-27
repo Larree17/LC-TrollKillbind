@@ -237,7 +237,7 @@ namespace KillBind.Patches
             }
             else
             {
-                MenuManagerPatch.Instance.changesNotAppliedText.enabled = true;
+                QuickMenuManagerPatch.Instance.changesNotAppliedText.enabled = true;
                 settingsBackButton = QuickMenuManagerPatch.Instance.settingsBackButton;
                 discardText = "Discard changes";
             }
