@@ -8,7 +8,7 @@ namespace KillBind.Patches
     {
         [HarmonyPatch("Start")]
         [HarmonyPostfix]
-        public static void OnStart()
+        public static void OnStart(QuickMenuManager __instance)
         {
             CreateInScene();
         }

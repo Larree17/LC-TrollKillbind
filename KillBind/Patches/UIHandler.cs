@@ -1,4 +1,6 @@
-﻿using System;
+﻿using DunGen;
+using System;
+using System.Collections;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
@@ -58,6 +60,8 @@ namespace KillBind.Patches
         private static readonly Vector3 NormalScale = Vector3.one;
         private static readonly Quaternion zeroRotation = new Quaternion(0, 0, 0, 0);
 
+        private static AudioSource menuAudio;
+
         //Methods
 
         private static void CreateInMemory()
@@ -77,6 +81,8 @@ namespace KillBind.Patches
             memoryMenu = GameObject.Instantiate(memoryMenu);
             memoryMenu.name = "KillBindMenu";
             memoryMenu.GetComponent<RectTransform>().sizeDelta = MenuSize;
+
+            menuAudio = memoryMenu.AddComponent<AudioSource>();
 
             MenuTransform = memoryMenu.transform;
 
@@ -156,6 +162,8 @@ namespace KillBind.Patches
             Menu = GameObject.Instantiate(memoryMenu);
             Menu.SetActive(true);
 
+            menuAudio = Menu.GetComponent<AudioSource>();
+
             MenuTransform = Menu.transform;
             MenuTransform.SetParent(SettingsPanelTransform);
             MenuTransform.localPosition = MenuLocalPosition;
@@ -203,6 +211,8 @@ namespace KillBind.Patches
 
         private static void ValueUpdateDropdown(TMP_Dropdown targetDropdownComponent)
         {
+            CoroutineHelper.Start(QuickMenuManagerPlaySound());
+
             if (targetDropdownComponent == DeathDropdownComponent) //if the dropdown is for Cause of Death
             {
                 UnsetDeathCause = targetDropdownComponent.value;
@@ -211,6 +221,12 @@ namespace KillBind.Patches
 
             UnsetHeadType = targetDropdownComponent.value;
             return;
+        }
+
+        private static IEnumerator QuickMenuManagerPlaySound()
+        {
+            yield return null; //Yield until next frame
+            menuAudio.PlayOneShot(GameNetworkManager.Instance.buttonTuneSFX);
         }
 
         private static GameObject GetSettingsPanel()
