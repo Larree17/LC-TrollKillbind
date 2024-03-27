@@ -28,5 +28,20 @@ namespace KillBind.Patches
 
             return;
         }
+
+        [HarmonyPatch("ResetSettingsToDefault")]
+        [HarmonyPostfix]
+        private static void ResetSettings()
+        {
+            ModSettings.HeadType.Value = (int)ModSettings.HeadType.DefaultValue;
+            ModSettings.DeathCause.Value = (int)ModSettings.DeathCause.DefaultValue;
+
+            UnsetHeadType = ModSettings.HeadType.Value;
+            UnsetDeathCause = ModSettings.DeathCause.Value;
+
+            DeathDropdownComponent.SetValueWithoutNotify(UnsetDeathCause);
+            HeadDropdownComponent.SetValueWithoutNotify(UnsetHeadType);
+            return;
+        }
     }
 }
