@@ -22,7 +22,7 @@ namespace KillBind
     {
         private const string modGUID = "com.Confusified.KillBind";
         private const string modName = "Kill Bind";
-        private const string modVersion = "2.0.0";
+        private const string modVersion = "2.0.1";
 
         public static readonly KillBind_Inputs InputActionInstance = new KillBind_Inputs();
         private readonly Harmony _harmony = new Harmony(modGUID);

@@ -13,13 +13,16 @@ namespace KillBind.Patches
     public class KillBindHandler
     {
         private static PlayerControllerB PlayerControllerBInstance;
+        private static Terminal TerminalInstance;
 
-        [HarmonyPatch("Awake")]
-        public static void Prefix(PlayerControllerB __instance)
+        [HarmonyPatch("ConnectClientToPlayerObject")]
+        public static void Postfix(PlayerControllerB __instance)
         {
-            PlayerControllerBInstance = __instance;
-            if (PlayerControllerBInstance != GameNetworkManager.Instance.localPlayerController)
+            if (__instance == GameNetworkManager.Instance.localPlayerController)
             {
+                PlayerControllerBInstance = __instance;
+                TerminalInstance = UnityEngine.Object.FindObjectOfType<Terminal>();
+
                 InputActionInstance.ActionKillBind.performed += OnKeyPress;
                 modLogger.LogInfo("KillBind has been bound"); // Don't have to worry about unbinding it, it is taken care of in OnKeyPress (with an if statement)
             }
@@ -32,7 +35,7 @@ namespace KillBind.Patches
             if (PlayerControllerBInstance != GameNetworkManager.Instance.localPlayerController) { return; };
             if (PlayerControllerBInstance.isPlayerDead) { return; };
             if (HUDManager.Instance.typingIndicator.enabled || PlayerControllerBInstance.isTypingChat) { return; };
-            if (UnityEngine.Object.FindObjectOfType<Terminal>().terminalInUse && PlayerControllerBInstance.inTerminalMenu) { return; };
+            if (TerminalInstance.terminalInUse && PlayerControllerBInstance.inTerminalMenu) { return; };
 
             //Check if current config is valid
             if (ModSettings.DeathCause.Value > Enum.GetValues(typeof(CauseOfDeath)).Length || ModSettings.DeathCause.Value < 0) //If your choice is invalid, set to default (unknown death cause)
