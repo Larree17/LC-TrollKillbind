@@ -16,7 +16,7 @@ namespace KillBind.Patches
         //TO DO: merge the code for creating the dropdowns into a method (only for the property changes that both dropdowns have)
 
         public static int UnsetDeathCause = ModSettings.DeathCause.Value;
-        public static int UnsetHeadType = ModSettings.HeadType.Value;
+        public static int UnsetRagdollType = ModSettings.RagdollType.Value;
 
         private static GameObject MenuContainer;
 
@@ -44,6 +44,10 @@ namespace KillBind.Patches
         private static readonly Vector3 HeadDropdownLocalPosition = new Vector3(54.3413f, -26.5335f, 0.5443f);
         private static readonly Vector3 HeadDropdownTextLocalPosition = new Vector3(-100.7262f, 0, -0.3203f); // slightly different so the ':' of both texts align
 
+        private static List<string> CauseOfDeathDropdownList = new List<string> { }; //Default values
+        private static bool DeathCreatedList = false;
+        public static List<string> HeadTypeDropdownList = new List<string> { "Normal", "Decapitated", "Spring" }; //Default values
+
         private static GameObject TitleMenu;
         private static Transform TitleMenuTransform;
         private static TextMeshProUGUI TitleMenuComponent;
@@ -54,7 +58,7 @@ namespace KillBind.Patches
 
         private static readonly string textTitle = "KILL BIND SETTINGS"; //all caps to match vanilla
         private static readonly string deathcauseTitle = "Cause of death:"; // Cause of Death enums
-        private static readonly string headtypeTitle = "Type of head:"; // Normal, Decapitated, Spring head
+        private static readonly string headtypeTitle = "Ragdoll type:"; // Normal, Decapitated, Spring head
 
         private static readonly Vector2 DropdownSize = new Vector2(156, 30);
         private static readonly Vector3 NormalScale = Vector3.one;
@@ -114,10 +118,6 @@ namespace KillBind.Patches
             HeadDropdown = GameObject.Instantiate(DeathDropdown);
             HeadDropdown.name = "HeadTypeDropdown";
 
-            HeadDropdownComponent = HeadDropdown.GetComponent<TMP_Dropdown>();
-            HeadDropdownComponent.ClearOptions(); //Clear values from DeathCauseDropdown
-            HeadDropdownComponent.AddOptions(SetDropdownList(false));
-
             HeadDropdownTransform = HeadDropdown.transform;
             HeadDropdownTransform.SetParent(MenuTransform);
             HeadDropdownTransform.localPosition = HeadDropdownLocalPosition;
@@ -175,7 +175,9 @@ namespace KillBind.Patches
             DeathDropdownComponent.SetValueWithoutNotify(ModSettings.DeathCause.Value);
 
             HeadDropdownComponent = MenuTransform.Find(HeadDropdown.name).gameObject.GetComponent<TMP_Dropdown>();
-            HeadDropdownComponent.SetValueWithoutNotify(ModSettings.HeadType.Value);
+            HeadDropdownComponent.ClearOptions(); //Clear values from DeathCauseDropdown
+            HeadDropdownComponent.AddOptions(SetDropdownList(false));
+            HeadDropdownComponent.SetValueWithoutNotify(ModSettings.RagdollType.Value);
 
             TitleMenuTransform = MenuTransform.Find("Title").gameObject.transform; //do this when in scene
             TitleMenuTransform.localPosition = TitleLocalPosition;
@@ -193,20 +195,21 @@ namespace KillBind.Patches
 
         private static List<string> SetDropdownList(bool isCauseOfDeathDropdown)
         {
-            List<string> dropdownList = new List<string> { "Normal", "Decapitated", "Spring head" };
-
-            if (isCauseOfDeathDropdown)
+            if (isCauseOfDeathDropdown && !DeathCreatedList)
             {
-                dropdownList.Clear(); //Remove preset values
-
                 foreach (CauseOfDeath enumValue in CauseOfDeathValues)
                 {
-                    dropdownList.Add(enumValue.ToString());
+                    CauseOfDeathDropdownList.Add(enumValue.ToString());
                 }
-                return dropdownList;
+                DeathCreatedList = true;
+                return CauseOfDeathDropdownList;
+            }
+            else if (isCauseOfDeathDropdown && DeathCreatedList)
+            {
+                return CauseOfDeathDropdownList;
             }
 
-            return dropdownList; //if not Cause of Death, return preset list (list for Head Type)
+            return HeadTypeDropdownList;
         }
 
         private static void ValueUpdateDropdown(TMP_Dropdown targetDropdownComponent)
@@ -220,7 +223,7 @@ namespace KillBind.Patches
                 return;
             }
 
-            UnsetHeadType = targetDropdownComponent.value;
+            UnsetRagdollType = targetDropdownComponent.value;
             return;
         }
 

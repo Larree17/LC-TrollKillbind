@@ -36,8 +36,8 @@ namespace KillBind
         {
             public static bool ModEnabled = true;
             public static int DeathCause = 0;
-            public static int HeadType = 1;
-            public static int ConfigVersion = 1;
+            public static int RagdollType = 1;
+            public static int ConfigVersion = 2;
             public static bool FirstTime = true;
         }
 
@@ -45,7 +45,8 @@ namespace KillBind
         {
             public static ConfigEntry<bool> ModEnabled;
             public static ConfigEntry<int> DeathCause;
-            public static ConfigEntry<int> HeadType;
+            public static ConfigEntry<int> RagdollType;
+            public static ConfigEntry<int> HeadType; //from before v2.1.0
             public static int ConfigVersion;
             public static bool FirstTime;
         }
@@ -68,6 +69,7 @@ namespace KillBind
             }
 
             UpdateConfig();
+            ClearLegacySettings();
             if (ModSettings.ModEnabled.Value)
             {
                 _harmony.PatchAll(Assembly.GetExecutingAssembly());
@@ -82,16 +84,21 @@ namespace KillBind
         {
             LoadPrivateConfig();
             ModSettings.ModEnabled = modConfig.Bind<bool>("Mod Settings", "Enabled", true, "Toggle the mod");
-            ModSettings.DeathCause = modConfig.Bind<int>("Mod Settings", "DeathType", 0, "Cause of Death your ragdoll will have");
+            ModSettings.DeathCause = modConfig.Bind<int>("Mod Settings", "Death Cause", 0, "Cause of Death your ragdoll will have");
+            ModSettings.RagdollType = modConfig.Bind<int>("Mod Settings", "Ragdoll Type", 1, "Type of ragdoll you will have");
+
+            //Legacy settings
             ModSettings.HeadType = modConfig.Bind<int>("Mod Settings", "HeadType", 1, "Type of head your ragdoll will have");
         }
 
         private void UpdateConfig()
         {
+            modLogger.LogInfo("start");
             if (ModSettings.ConfigVersion == DefaultModSettings.ConfigVersion) { return; }
             int[] oldInts = { ModSettings.HeadType.Value, ModSettings.DeathCause.Value, ModSettings.ConfigVersion };
             bool oldModEnabled = ModSettings.ModEnabled.Value;
 
+            modLogger.LogInfo("clearing");
             //Clear files and variables
             modConfig.Clear();
             modConfig = null;
@@ -100,18 +107,19 @@ namespace KillBind
 
             ModSettings.ModEnabled = null;
             ModSettings.DeathCause = null;
-            ModSettings.HeadType = null;
+            ModSettings.RagdollType = null;
             ModSettings.ConfigVersion = -999;
 
+            modLogger.LogInfo("setting defaults");
             //Set default values
             InitialiseConfig();
-
+            modLogger.LogInfo("reverting old stuff");
             //Restore old values
-            ModSettings.HeadType.Value = oldInts[0];
+            ModSettings.RagdollType.Value = oldInts[0];
             ModSettings.DeathCause.Value = oldInts[1];
             ModSettings.ModEnabled.Value = oldModEnabled;
             ModSettings.ConfigVersion = DefaultModSettings.ConfigVersion;
-            ES3.Save("ConfigVersion", ModSettings.ConfigVersion, privateConfigLocation); //not really needed because it won't change mid-game
+            ES3.Save("ConfigVersion", ModSettings.ConfigVersion, privateConfigLocation);
 
             StringBuilder updatedConfigOutput = new StringBuilder("Updated config file from version 0 to 1");
             updatedConfigOutput.Replace("0", oldInts[2].ToString());
@@ -125,6 +133,11 @@ namespace KillBind
             ModSettings.ConfigVersion = ES3.Load("ConfigVersion", privateConfigLocation, DefaultModSettings.ConfigVersion);
             ModSettings.FirstTime = ES3.Load("FirstTime", privateConfigLocation, DefaultModSettings.FirstTime);
             return;
+        }
+
+        private static void ClearLegacySettings()
+        {
+            modConfig.Remove(ModSettings.HeadType.Definition);
         }
     }
 }
