@@ -26,7 +26,6 @@ namespace KillBind.Patches
                 {
                     string ragdollName = CleanRagdollName(ragdoll.name);
                     HeadTypeDropdownList.Add(ragdollName);
-                    Initialise.modLogger.LogInfo(ragdollName);
                 }
                 HeadCreatedList = true;
                 return;
@@ -53,10 +52,7 @@ namespace KillBind.Patches
             {
                 ragdollName = ragdollName.Replace("PlayerRagdoll", "");
                 ragdollName = ragdollName.Replace(" Variant", "");
-                //   ragdollName = ragdollName.Substring(0, 13); //Remove "PlayerRagdoll"
-                //  ragdollName = ragdollName.Substring(ragdollName.Length - 8); //Remove "Variant"
             }
-            Initialise.modLogger.LogInfo(ragdollName);
             return ragdollName;
         }
     }

@@ -46,9 +46,13 @@ namespace KillBind
             public static ConfigEntry<bool> ModEnabled;
             public static ConfigEntry<int> DeathCause;
             public static ConfigEntry<int> RagdollType;
-            public static ConfigEntry<int> HeadType; //from before v2.1.0
             public static int ConfigVersion;
             public static bool FirstTime;
+        }
+
+        public class LegacySettings
+        {
+            public static ConfigEntry<int> HeadType; //from before v2.1.0
         }
 
         public void Awake()
@@ -63,7 +67,7 @@ namespace KillBind
 
             if (ModSettings.FirstTime)
             {
-                ModSettings.ConfigVersion = 0;
+                ModSettings.ConfigVersion = -1; //To make sure it'll update your config
                 ModSettings.FirstTime = false;
                 ES3.Save("FirstTime", ModSettings.FirstTime, privateConfigLocation);
             }
@@ -88,17 +92,15 @@ namespace KillBind
             ModSettings.RagdollType = modConfig.Bind<int>("Mod Settings", "Ragdoll Type", 1, "Type of ragdoll you will have");
 
             //Legacy settings
-            ModSettings.HeadType = modConfig.Bind<int>("Mod Settings", "HeadType", 1, "Type of head your ragdoll will have");
+            LegacySettings.HeadType = modConfig.Bind<int>("Mod Settings", "HeadType", 1, "Type of head your ragdoll will have");
         }
 
         private void UpdateConfig()
         {
-            modLogger.LogInfo("start");
             if (ModSettings.ConfigVersion == DefaultModSettings.ConfigVersion) { return; }
-            int[] oldInts = { ModSettings.HeadType.Value, ModSettings.DeathCause.Value, ModSettings.ConfigVersion };
+            int[] oldInts = { LegacySettings.HeadType.Value, ModSettings.DeathCause.Value, ModSettings.ConfigVersion };
             bool oldModEnabled = ModSettings.ModEnabled.Value;
 
-            modLogger.LogInfo("clearing");
             //Clear files and variables
             modConfig.Clear();
             modConfig = null;
@@ -110,10 +112,9 @@ namespace KillBind
             ModSettings.RagdollType = null;
             ModSettings.ConfigVersion = -999;
 
-            modLogger.LogInfo("setting defaults");
             //Set default values
             InitialiseConfig();
-            modLogger.LogInfo("reverting old stuff");
+
             //Restore old values
             ModSettings.RagdollType.Value = oldInts[0];
             ModSettings.DeathCause.Value = oldInts[1];
@@ -137,7 +138,7 @@ namespace KillBind
 
         private static void ClearLegacySettings()
         {
-            modConfig.Remove(ModSettings.HeadType.Definition);
+            modConfig.Remove(LegacySettings.HeadType.Definition);
         }
     }
 }
