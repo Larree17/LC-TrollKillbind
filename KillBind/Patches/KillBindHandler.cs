@@ -14,6 +14,10 @@ namespace KillBind.Patches
     {
         private static PlayerControllerB PlayerControllerBInstance;
         private static Terminal TerminalInstance;
+        private static Vector3 PositionLastFrame;
+        private static Vector3 PositionCurrentFrame;
+        private static Vector3 RagdollVelocity;
+        private static readonly float VelocityMultiplier = 45;
 
         [HarmonyPatch("ConnectClientToPlayerObject")]
         public static void Postfix(PlayerControllerB __instance)
@@ -56,8 +60,13 @@ namespace KillBind.Patches
 
         private static IEnumerator KillNextUpdate()
         {
-            yield return null; //To fix the body spawning under the map, pauses until the next update cycle
-            PlayerControllerBInstance.KillPlayer(Vector3.zero, true, (CauseOfDeath)ModSettings.DeathCause.Value, ModSettings.HeadType.Value);
+            PositionLastFrame = PlayerControllerBInstance.gameplayCamera.transform.position;
+            yield return null; //To fix the body spawning under the map, wait until the next update cycle
+            PositionCurrentFrame = PlayerControllerBInstance.gameplayCamera.transform.position;
+            RagdollVelocity = (PositionCurrentFrame - PositionLastFrame) * VelocityMultiplier; //The difference in position from these frames are insanely small, so it's multiplied
+            RagdollVelocity.y *= 25 / VelocityMultiplier; //Reduce velocity in y-axis, the y-axis velocity will increase when VelocityMultiplier is under 25 (otherwise it would be negligible)
+
+            PlayerControllerBInstance.KillPlayer(RagdollVelocity, true, (CauseOfDeath)ModSettings.DeathCause.Value, ModSettings.HeadType.Value);
         }
     }
 }
