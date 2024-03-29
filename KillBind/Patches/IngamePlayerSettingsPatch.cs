@@ -20,7 +20,7 @@ namespace KillBind.Patches
         private static void OnSaveChanges()
         {
             ModSettings.DeathCause.Value = UnsetDeathCause;
-            ModSettings.HeadType.Value = UnsetHeadType;
+            ModSettings.RagdollType.Value = UnsetRagdollType;
             return;
         }
 
@@ -29,10 +29,10 @@ namespace KillBind.Patches
         private static void OnRestoreChanges()
         {
             DeathDropdownComponent.SetValueWithoutNotify(ModSettings.DeathCause.Value);
-            HeadDropdownComponent.SetValueWithoutNotify(ModSettings.HeadType.Value);
+            HeadDropdownComponent.SetValueWithoutNotify(ModSettings.RagdollType.Value);
 
             UnsetDeathCause = ModSettings.DeathCause.Value;
-            UnsetHeadType = ModSettings.HeadType.Value;
+            UnsetRagdollType = ModSettings.RagdollType.Value;
 
             return;
         }
@@ -41,14 +41,14 @@ namespace KillBind.Patches
         [HarmonyPostfix]
         private static void ResetSettings()
         {
-            ModSettings.HeadType.Value = (int)ModSettings.HeadType.DefaultValue;
+            ModSettings.RagdollType.Value = (int)ModSettings.RagdollType.DefaultValue;
             ModSettings.DeathCause.Value = (int)ModSettings.DeathCause.DefaultValue;
 
-            UnsetHeadType = ModSettings.HeadType.Value;
+            UnsetRagdollType = ModSettings.RagdollType.Value;
             UnsetDeathCause = ModSettings.DeathCause.Value;
 
             DeathDropdownComponent.SetValueWithoutNotify(UnsetDeathCause);
-            HeadDropdownComponent.SetValueWithoutNotify(UnsetHeadType);
+            HeadDropdownComponent.SetValueWithoutNotify(UnsetRagdollType);
             return;
         }
     }

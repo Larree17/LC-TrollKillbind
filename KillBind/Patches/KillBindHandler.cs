@@ -14,6 +14,12 @@ namespace KillBind.Patches
     {
         private static PlayerControllerB PlayerControllerBInstance;
         private static Terminal TerminalInstance;
+        public static StartOfRound StartOfRoundInstance;
+
+        private static Vector3 PositionLastFrame;
+        private static Vector3 PositionCurrentFrame;
+        private static Vector3 RagdollVelocity;
+        private static readonly float VelocityMultiplier = 46;
 
         [HarmonyPatch("ConnectClientToPlayerObject")]
         public static void Postfix(PlayerControllerB __instance)
@@ -22,6 +28,7 @@ namespace KillBind.Patches
             {
                 PlayerControllerBInstance = __instance;
                 TerminalInstance = UnityEngine.Object.FindObjectOfType<Terminal>();
+                StartOfRoundInstance = StartOfRound.Instance;
 
                 InputActionInstance.ActionKillBind.performed += OnKeyPress;
                 modLogger.LogInfo("KillBind has been bound"); // Don't have to worry about unbinding it, it is taken care of in OnKeyPress (with an if statement)
@@ -44,9 +51,9 @@ namespace KillBind.Patches
                 modLogger.LogInfo("Your config for HeadType is invalid, reverting to default");
             }
 
-            if (ModSettings.HeadType.Value > 3 || ModSettings.HeadType.Value < 0) //If your choice is invalid, set to default (explode head)
+            if (ModSettings.RagdollType.Value > StartOfRoundInstance.playerRagdolls.Count || ModSettings.RagdollType.Value < 0) //If your choice is invalid, set to default (explode head)
             {
-                ModSettings.HeadType.Value = (int)ModSettings.HeadType.DefaultValue;
+                ModSettings.RagdollType.Value = (int)ModSettings.RagdollType.DefaultValue;
                 modLogger.LogInfo("Your config for HeadType is invalid, reverting to default");
             }
 
@@ -56,8 +63,13 @@ namespace KillBind.Patches
 
         private static IEnumerator KillNextUpdate()
         {
-            yield return null; //To fix the body spawning under the map, pauses until the next update cycle
-            PlayerControllerBInstance.KillPlayer(Vector3.zero, true, (CauseOfDeath)ModSettings.DeathCause.Value, ModSettings.HeadType.Value);
+            PositionLastFrame = PlayerControllerBInstance.gameplayCamera.transform.position;
+            yield return null; //To fix the body spawning under the map, wait until the next update cycle
+            PositionCurrentFrame = PlayerControllerBInstance.gameplayCamera.transform.position;
+            RagdollVelocity = (PositionCurrentFrame - PositionLastFrame) * VelocityMultiplier; //The difference in position from these frames are insanely small, so it's multiplied
+            RagdollVelocity.y *= 25 / VelocityMultiplier; //Reduce velocity in y-axis, the y-axis velocity will increase when VelocityMultiplier is under 25 (otherwise it would be negligible)
+
+            PlayerControllerBInstance.KillPlayer(RagdollVelocity, true, (CauseOfDeath)ModSettings.DeathCause.Value, ModSettings.RagdollType.Value);
         }
     }
 }
