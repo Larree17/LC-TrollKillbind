@@ -46,7 +46,7 @@ namespace KillBind.Patches
 
         private static List<string> CauseOfDeathDropdownList = new List<string> { }; //Default values
         private static bool DeathCreatedList = false;
-        public static List<string> HeadTypeDropdownList = new List<string> { "Normal", "HeadBurst", "Spring", "Electrocuted", "Comedy Mask", "Tragedy Mask" }; //Default values, will have to manually update this
+        public static List<string> HeadTypeDropdownList = new List<string> { "Normal", "HeadBurst", "Spring", "Electrocuted", "Comedy Mask", "Tragedy Mask", "Burnt" }; //Default values, will have to manually update this
 
         private static GameObject TitleMenu;
         private static Transform TitleMenuTransform;
