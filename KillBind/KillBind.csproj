@@ -83,7 +83,6 @@
     <Compile Include="Patches\KillBindHandler.cs" />
     <Compile Include="Patches\MenuManagerPatch.cs" />
     <Compile Include="Patches\QuickMenuManagerPatch.cs" />
-    <Compile Include="Patches\StartOfRoundPatch.cs" />
     <Compile Include="UI\UIHandler.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
