@@ -135,10 +135,5 @@ namespace KillBind
             ModSettings.FirstTime = ES3.Load("FirstTime", privateConfigLocation, DefaultModSettings.FirstTime);
             return;
         }
-
-        private static void ClearLegacySettings()
-        {
-            modConfig.Remove(LegacySettings.HeadType.Definition);
-        }
     }
 }
