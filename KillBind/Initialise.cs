@@ -7,6 +7,7 @@ using UnityEngine.InputSystem;
 using System.Reflection;
 using System.Text;
 using System.IO;
+using System.Collections.Generic;
 
 namespace KillBind
 {
@@ -31,6 +32,8 @@ namespace KillBind
         private static readonly string configLocation = Utility.CombinePaths(Paths.ConfigPath + "\\" + modGUID.Substring(4).Replace(".", "\\"));
         private static readonly string privateConfigLocation = configLocation + ".private";
         private static ConfigFile modConfig = new ConfigFile(configLocation + ".cfg", false);
+
+        public static List<string> RagdollTypeList;
 
         public class DefaultModSettings
         {
@@ -73,8 +76,15 @@ namespace KillBind
             }
 
             UpdateConfig();
+            ClearLegacySettings();
+
             if (ModSettings.ModEnabled.Value)
             {
+                RagdollTypeList = new List<string> { "Normal", "HeadBurst", "Spring", "Electrocuted", "Comedy Mask", "Tragedy Mask" };
+                if (Isv50())
+                {
+                    RagdollTypeList.Add("Burnt"); //v50 (or anything that isn't v49 and v47)
+                }
                 _harmony.PatchAll(Assembly.GetExecutingAssembly());
                 modLogger.LogInfo($"{modName} {modVersion} has loaded");
                 return;
@@ -133,6 +143,25 @@ namespace KillBind
             ModSettings.ConfigVersion = ES3.Load("ConfigVersion", privateConfigLocation, DefaultModSettings.ConfigVersion);
             ModSettings.FirstTime = ES3.Load("FirstTime", privateConfigLocation, DefaultModSettings.FirstTime);
             return;
+        }
+
+        private static void ClearLegacySettings()
+        {
+            modConfig.Remove(LegacySettings.HeadType.Definition);
+        }
+
+        // this is (hopefully) temporary
+        private const string v49Hash = "af9b1eec-498a-45ae-bd42-601d6ab85015";
+
+        private const string v45Hash = "44743d94-7478-4365-a095-189c76175301";
+
+        public static bool Isv50()
+        {
+            string currentHash = Assembly.LoadFile(Paths.ManagedPath + "\\Assembly-CSharp.dll").ManifestModule.ModuleVersionId.ToString();
+
+            //Initialise.modLogger.LogInfo(currentHash);
+            if (v49Hash == currentHash || v45Hash == currentHash) { return false; } //not v50
+            return true; //v50 (or another version)
         }
     }
 }
