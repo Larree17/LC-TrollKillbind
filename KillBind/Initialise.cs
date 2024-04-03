@@ -73,7 +73,6 @@ namespace KillBind
             }
 
             UpdateConfig();
-            ClearLegacySettings();
             if (ModSettings.ModEnabled.Value)
             {
                 _harmony.PatchAll(Assembly.GetExecutingAssembly());

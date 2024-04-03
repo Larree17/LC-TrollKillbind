@@ -12,7 +12,7 @@ namespace KillBind.Patches
     [HarmonyPatch(typeof(StartOfRound))]
     public class StartOfRoundPatch
     {
-        private static bool HeadCreatedList = false;
+        public static bool HeadCreatedList = false;
 
         [HarmonyPatch("Start")]
         [HarmonyPostfix]
@@ -33,7 +33,7 @@ namespace KillBind.Patches
             return;
         }
 
-        private static string CleanRagdollName(string ragdollName)
+        public static string CleanRagdollName(string ragdollName)
         {
             Initialise.modLogger.LogInfo(ragdollName);
             if (ragdollName == "PlayerRagdoll") //Normal ragdoll

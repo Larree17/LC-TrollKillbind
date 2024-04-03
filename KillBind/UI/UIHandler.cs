@@ -58,7 +58,7 @@ namespace KillBind.Patches
 
         private static readonly string textTitle = "KILL BIND SETTINGS"; //all caps to match vanilla
         private static readonly string deathcauseTitle = "Cause of death:"; // Cause of Death enums
-        private static readonly string headtypeTitle = "Ragdoll type:"; // Normal, Decapitated, Spring head
+        private static readonly string headtypeTitle = "Ragdoll type:"; // Normal, Headburst, Spring, etc
 
         private static readonly Vector2 DropdownSize = new Vector2(156, 30);
         private static readonly Vector3 NormalScale = Vector3.one;
