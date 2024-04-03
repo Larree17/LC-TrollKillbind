@@ -31,8 +31,14 @@ namespace KillBind.Patches
                 StartOfRoundInstance = StartOfRound.Instance;
 
                 InputActionInstance.ActionKillBind.performed += OnKeyPress;
-                modLogger.LogInfo("KillBind has been bound"); // Don't have to worry about unbinding it, it is taken care of in OnKeyPress (with an if statement)
+                modLogger.LogInfo("KillBind has been bound");
             }
+        }
+
+        [HarmonyPatch(nameof(PlayerControllerB.OnDestroy))]
+        private static void Postfix()
+        {
+            InputActionInstance.ActionKillBind.performed -= OnKeyPress; //i think (i'm not sure) it would create a memory leak otherwise
         }
 
         public static void OnKeyPress(InputAction.CallbackContext callbackContext)

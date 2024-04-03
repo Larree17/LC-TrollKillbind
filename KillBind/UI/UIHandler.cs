@@ -44,9 +44,9 @@ namespace KillBind.Patches
         private static readonly Vector3 HeadDropdownLocalPosition = new Vector3(54.3413f, -26.5335f, 0.5443f);
         private static readonly Vector3 HeadDropdownTextLocalPosition = new Vector3(-100.7262f, 0, -0.3203f); // slightly different so the ':' of both texts align
 
-        private static List<string> CauseOfDeathDropdownList = new List<string> { }; //Default values
+        private static List<string> CauseOfDeathDropdownList = new List<string> { };
         private static bool DeathCreatedList = false;
-        public static List<string> HeadTypeDropdownList = new List<string> { "Normal", "HeadBurst", "Spring", "Electrocuted", "Comedy Mask", "Tragedy Mask", "Burnt" }; //Default values, will have to manually update this
+        public static List<string> HeadTypeDropdownList = new List<string> { };
 
         private static GameObject TitleMenu;
         private static Transform TitleMenuTransform;
