@@ -2,6 +2,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Reflection;
 using TMPro;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -44,9 +45,15 @@ namespace KillBind.Patches
         private static readonly Vector3 HeadDropdownLocalPosition = new Vector3(54.3413f, -26.5335f, 0.5443f);
         private static readonly Vector3 HeadDropdownTextLocalPosition = new Vector3(-100.7262f, 0, -0.3203f); // slightly different so the ':' of both texts align
 
+<<<<<<< HEAD
         private static List<string> CauseOfDeathDropdownList = new List<string> { }; //Default values
         private static bool DeathCreatedList = false;
         public static List<string> HeadTypeDropdownList = new List<string> { "Normal", "HeadBurst", "Spring", "Electrocuted", "Comedy Mask", "Tragedy Mask" }; //Default values, will have to manually update this
+=======
+        private static List<string> CauseOfDeathDropdownList = new List<string> { };
+        private static bool DeathCreatedList = false;
+        public static List<string> HeadTypeDropdownList; //Premade list for when you launch the game (will be set automatically after joining a lobby once)
+>>>>>>> master
 
         private static GameObject TitleMenu;
         private static Transform TitleMenuTransform;
@@ -58,7 +65,11 @@ namespace KillBind.Patches
 
         private static readonly string textTitle = "KILL BIND SETTINGS"; //all caps to match vanilla
         private static readonly string deathcauseTitle = "Cause of death:"; // Cause of Death enums
+<<<<<<< HEAD
         private static readonly string headtypeTitle = "Ragdoll type:"; // Normal, Decapitated, Spring head
+=======
+        private static readonly string headtypeTitle = "Ragdoll type:"; // Normal, Headburst, Spring, etc
+>>>>>>> master
 
         private static readonly Vector2 DropdownSize = new Vector2(156, 30);
         private static readonly Vector3 NormalScale = Vector3.one;
@@ -73,6 +84,7 @@ namespace KillBind.Patches
             if (ExistsInMemory) { return; } //To avoid potential memory leaks
 
             CauseOfDeathValues = Enum.GetValues(typeof(CauseOfDeath)); //Put result in variable for later use
+            HeadTypeDropdownList = Initialise.RagdollTypeList;
 
             MenuContainer = GetSettingsPanel();
 
@@ -113,7 +125,7 @@ namespace KillBind.Patches
             DeathDropdownText.GetComponent<TextMeshProUGUI>().text = deathcauseTitle;
             DeathDropdownText.transform.localPosition = DeathDropdownTextLocalPosition;
 
-            //Create Head Type (HeadType) Dropdown
+            //Create Head Type (HeadType) Dropdown → should be renamed to RagdollType
 
             HeadDropdown = GameObject.Instantiate(DeathDropdown);
             HeadDropdown.name = "HeadTypeDropdown";

@@ -1,8 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+<<<<<<< HEAD
 using System.Text;
 using System.Threading.Tasks;
+=======
+>>>>>>> master
 using HarmonyLib;
 using UnityEngine;
 using static KillBind.Patches.UIHandler;
@@ -12,7 +15,11 @@ namespace KillBind.Patches
     [HarmonyPatch(typeof(StartOfRound))]
     public class StartOfRoundPatch
     {
+<<<<<<< HEAD
         private static bool HeadCreatedList = false;
+=======
+        public static bool HeadCreatedList = false;
+>>>>>>> master
 
         [HarmonyPatch("Start")]
         [HarmonyPostfix]
@@ -33,7 +40,11 @@ namespace KillBind.Patches
             return;
         }
 
+<<<<<<< HEAD
         private static string CleanRagdollName(string ragdollName)
+=======
+        public static string CleanRagdollName(string ragdollName)
+>>>>>>> master
         {
             Initialise.modLogger.LogInfo(ragdollName);
             if (ragdollName == "PlayerRagdoll") //Normal ragdoll
