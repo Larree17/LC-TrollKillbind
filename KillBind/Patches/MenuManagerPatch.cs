@@ -1,6 +1,7 @@
 ﻿using HarmonyLib;
 using UnityEngine;
 using static KillBind.Patches.UIHandler;
+using static KillBind.Patches.StartOfRoundPatch;
 
 namespace KillBind.Patches
 {
@@ -8,7 +9,6 @@ namespace KillBind.Patches
     public class MenuManagerPatch
     {
         public static MenuManager Instance;
-        private static bool HeadCreatedList = false;
 
         [HarmonyPatch("Awake")]
         [HarmonyPrefix]
@@ -33,29 +33,6 @@ namespace KillBind.Patches
                 return;
             }
             return;
-        }
-
-        private static string CleanRagdollName(string ragdollName)
-        {
-            Initialise.modLogger.LogInfo(ragdollName);
-            if (ragdollName == "PlayerRagdoll") //Normal ragdoll
-            {
-                ragdollName = "Normal";
-            }
-            else if (ragdollName == "PlayerRagdollWithComedyMask Variant")
-            {
-                ragdollName = "Comedy Mask";
-            }
-            else if (ragdollName == "PlayerRagdollWithTragedyMask Variant")
-            {
-                ragdollName = "Tragedy Mask";
-            }
-            else
-            {
-                ragdollName = ragdollName.Replace("PlayerRagdoll", "");
-                ragdollName = ragdollName.Replace(" Variant", "");
-            }
-            return ragdollName;
         }
     }
 }
