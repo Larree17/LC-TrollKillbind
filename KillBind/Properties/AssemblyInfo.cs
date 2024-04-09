@@ -33,7 +33,11 @@ using System.Runtime.InteropServices;
 // [assembly: AssemblyVersion("1.0.*")]
 [assembly: AssemblyVersion("1.0.0.0")]
 <<<<<<< HEAD
+<<<<<<< HEAD
 [assembly: AssemblyFileVersion("2.1.0.0")]
 =======
 [assembly: AssemblyFileVersion("2.1.1.0")]
+>>>>>>> master
+=======
+[assembly: AssemblyFileVersion("2.1.2.0")]
 >>>>>>> master
