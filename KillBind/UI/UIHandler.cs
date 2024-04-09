@@ -2,7 +2,6 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Reflection;
 using TMPro;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -28,31 +27,31 @@ namespace KillBind.Patches
         private static GameObject memoryMenu;
         private static GameObject Menu;
         private static Transform MenuTransform;
-        private static readonly Vector3 MenuLocalPosition = new Vector3(-158.3053f, 93.1761f, 3.5f);
+        private static readonly Vector3 MenuLocalPosition = new Vector3(-158.3053f, 93.1761f, 3.5f); //change to offset
         private static readonly Vector2 MenuSize = new Vector2(273.7733f, 96.7017f);
 
         public static GameObject DeathDropdown;
         public static Transform DeathDropdownTransform;
         private static GameObject DeathDropdownText;
         public static TMP_Dropdown DeathDropdownComponent;
-        private static readonly Vector3 DeathDropdownLocalPosition = new Vector3(54.4909f, 7.9495f, -0.9875f);
+        private static readonly Vector3 DeathDropdownLocalPosition = new Vector3(54.4909f, 7.9495f, -0.9875f);//change to offset
         private static readonly Vector3 DeathDropdownTextLocalPosition = new Vector3(-113.8745f, 0, 1.3978f);
 
         public static GameObject HeadDropdown;
         public static Transform HeadDropdownTransform;
         private static GameObject HeadDropdownText;
         public static TMP_Dropdown HeadDropdownComponent;
-        private static readonly Vector3 HeadDropdownLocalPosition = new Vector3(54.3413f, -26.5335f, 0.5443f);
+        private static readonly Vector3 HeadDropdownLocalPosition = new Vector3(54.3413f, -26.5335f, 0.5443f);//change to offset
         private static readonly Vector3 HeadDropdownTextLocalPosition = new Vector3(-100.7262f, 0, -0.3203f); // slightly different so the ':' of both texts align
 
         private static List<string> CauseOfDeathDropdownList = new List<string> { };
         private static bool DeathCreatedList = false;
-        public static List<string> HeadTypeDropdownList; //Premade list for when you launch the game (will be set automatically after joining a lobby once)
+        public static List<string> RagdollTypeList = new List<string> { "Normal", "HeadBurst", "Spring", "Electrocuted", "Comedy Mask", "Tragedy Mask" }; //pre-made list of ragdolls, gets automatically updated after entering a lobby
 
         private static GameObject TitleMenu;
         private static Transform TitleMenuTransform;
         private static TextMeshProUGUI TitleMenuComponent;
-        private static readonly Vector3 TitleLocalPosition = new Vector3(-68.7573f, 35.4375f, -1.0543f);
+        private static readonly Vector3 TitleLocalPosition = new Vector3(-68.7573f, 35.4375f, -1.0543f);//change to offset
 
         private static GameObject SettingsPanel;
         private static Transform SettingsPanelTransform;
@@ -74,7 +73,10 @@ namespace KillBind.Patches
             if (ExistsInMemory) { return; } //To avoid potential memory leaks
 
             CauseOfDeathValues = Enum.GetValues(typeof(CauseOfDeath)); //Put result in variable for later use
-            HeadTypeDropdownList = Initialise.RagdollTypeList;
+            if (GameNetworkManagerPatch.currentGameVersion >= 50)
+            {
+                RagdollTypeList.Add("Burnt"); //Add ragdoll type that's only available in v50+
+            }
 
             MenuContainer = GetSettingsPanel();
 
@@ -104,14 +106,9 @@ namespace KillBind.Patches
             DeathDropdownComponent.AddOptions(SetDropdownList(true));
 
             GameObject.DestroyImmediate(DeathDropdown.GetComponent<SettingsOption>()); //Remove unneeded component
+            CreateDropdown(DeathDropdown);
 
-            DeathDropdownTransform = DeathDropdown.transform;
-            DeathDropdownTransform.SetParent(MenuTransform);
-            DeathDropdownTransform.localPosition = DeathDropdownLocalPosition;
-            DeathDropdownTransform.rotation = zeroRotation;
-            DeathDropdownTransform.localScale = NormalScale;
-
-            DeathDropdownText = DeathDropdownTransform.Find("Label2").gameObject;
+            DeathDropdownText = DeathDropdown.transform.Find("Label2").gameObject;
             DeathDropdownText.GetComponent<TextMeshProUGUI>().text = deathcauseTitle;
             DeathDropdownText.transform.localPosition = DeathDropdownTextLocalPosition;
 
@@ -119,14 +116,9 @@ namespace KillBind.Patches
 
             HeadDropdown = GameObject.Instantiate(DeathDropdown);
             HeadDropdown.name = "HeadTypeDropdown";
+            CreateDropdown(HeadDropdown);
 
-            HeadDropdownTransform = HeadDropdown.transform;
-            HeadDropdownTransform.SetParent(MenuTransform);
-            HeadDropdownTransform.localPosition = HeadDropdownLocalPosition;
-            HeadDropdownTransform.rotation = zeroRotation;
-            HeadDropdownTransform.localScale = NormalScale;
-
-            HeadDropdownText = HeadDropdownTransform.Find("Label2").gameObject;
+            HeadDropdownText = HeadDropdown.transform.Find("Label2").gameObject;
             HeadDropdownText.GetComponent<TextMeshProUGUI>().text = headtypeTitle;
             HeadDropdownText.transform.localPosition = HeadDropdownTextLocalPosition;
 
@@ -149,6 +141,22 @@ namespace KillBind.Patches
             UnityEngine.Object.DontDestroyOnLoad(memoryMenu);
             ExistsInMemory = true;
             modLogger.LogInfo("Succesfully created and stored the menu in memory");
+            return;
+        }
+
+        private static void CreateDropdown(GameObject dropdown)
+        {
+            Transform ddTransform = dropdown.transform;
+            ddTransform.SetParent(MenuTransform);
+            ddTransform.rotation = zeroRotation;
+            ddTransform.localScale = NormalScale;
+
+            if (dropdown == HeadDropdown)
+            {
+                ddTransform.localPosition = HeadDropdownLocalPosition;
+                return;
+            }
+            ddTransform.localPosition = DeathDropdownLocalPosition;
             return;
         }
 
@@ -211,7 +219,7 @@ namespace KillBind.Patches
                 return CauseOfDeathDropdownList;
             }
 
-            return HeadTypeDropdownList;
+            return RagdollTypeList;
         }
 
         private static void ValueUpdateDropdown(TMP_Dropdown targetDropdownComponent)

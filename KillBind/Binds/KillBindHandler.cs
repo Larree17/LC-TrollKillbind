@@ -19,7 +19,7 @@ namespace KillBind.Patches
         private static Vector3 PositionLastFrame;
         private static Vector3 PositionCurrentFrame;
         private static Vector3 RagdollVelocity;
-        private static readonly float VelocityMultiplier = 46;
+        private static readonly float VelocityMultiplier = 46f;
 
         [HarmonyPatch("ConnectClientToPlayerObject")]
         public static void Postfix(PlayerControllerB __instance)
@@ -31,14 +31,15 @@ namespace KillBind.Patches
                 StartOfRoundInstance = StartOfRound.Instance;
 
                 InputActionInstance.ActionKillBind.performed += OnKeyPress;
-                modLogger.LogInfo("KillBind has been bound");
             }
         }
 
         [HarmonyPatch(nameof(PlayerControllerB.OnDestroy))]
-        private static void Postfix()
+        private static void Postfix() //this fixes some memory leaks (i think)
         {
-            InputActionInstance.ActionKillBind.performed -= OnKeyPress; //i think (i'm not sure) it would create a memory leak otherwise
+            InputActionInstance.ActionKillBind.performed -= OnKeyPress;
+            UIHandler.DeathDropdownComponent.onValueChanged.RemoveAllListeners();
+            UIHandler.HeadDropdownComponent.onValueChanged.RemoveAllListeners();
         }
 
         public static void OnKeyPress(InputAction.CallbackContext callbackContext)
@@ -74,6 +75,7 @@ namespace KillBind.Patches
             PositionCurrentFrame = PlayerControllerBInstance.gameplayCamera.transform.position;
             RagdollVelocity = (PositionCurrentFrame - PositionLastFrame) * VelocityMultiplier; //The difference in position from these frames are insanely small, so it's multiplied
             RagdollVelocity.y *= 25 / VelocityMultiplier; //Reduce velocity in y-axis, the y-axis velocity will increase when VelocityMultiplier is under 25 (otherwise it would be negligible)
+            // There should be a limit to the VelocityMultiplier (min value of something and max value of something else) but it currently doesn't allow customisation anyway
 
             PlayerControllerBInstance.KillPlayer(RagdollVelocity, true, (CauseOfDeath)ModSettings.DeathCause.Value, ModSettings.RagdollType.Value);
         }

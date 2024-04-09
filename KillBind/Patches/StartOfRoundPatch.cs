@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using HarmonyLib;
+﻿using HarmonyLib;
 using UnityEngine;
 using static KillBind.Patches.UIHandler;
 
@@ -18,12 +15,12 @@ namespace KillBind.Patches
         {
             if (!HeadCreatedList) //Create list with real values
             {
-                HeadTypeDropdownList.Clear(); //Remove preset values
+                RagdollTypeList.Clear(); //Remove preset values
 
                 foreach (GameObject ragdoll in __instance.playerRagdolls)
                 {
                     string ragdollName = CleanRagdollName(ragdoll.name);
-                    HeadTypeDropdownList.Add(ragdollName);
+                    RagdollTypeList.Add(ragdollName);
                 }
                 HeadCreatedList = true;
                 return;
@@ -31,7 +28,7 @@ namespace KillBind.Patches
             return;
         }
 
-        public static string CleanRagdollName(string ragdollName)
+        private static string CleanRagdollName(string ragdollName)
         {
             Initialise.modLogger.LogInfo(ragdollName);
             if (ragdollName == "PlayerRagdoll") //Normal ragdoll
