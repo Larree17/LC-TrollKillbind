@@ -44,9 +44,19 @@ namespace KillBind.Patches
         private static readonly Vector3 HeadDropdownLocalPosition = new Vector3(54.3413f, -26.5335f, 0.5443f);//change to offset
         private static readonly Vector3 HeadDropdownTextLocalPosition = new Vector3(-100.7262f, 0, -0.3203f); // slightly different so the ':' of both texts align
 
+<<<<<<< HEAD
+        private static List<string> CauseOfDeathDropdownList = new List<string> { }; //Default values
+        private static bool DeathCreatedList = false;
+        public static List<string> HeadTypeDropdownList = new List<string> { "Normal", "HeadBurst", "Spring", "Electrocuted", "Comedy Mask", "Tragedy Mask" }; //Default values, will have to manually update this
+=======
         private static List<string> CauseOfDeathDropdownList = new List<string> { };
         private static bool DeathCreatedList = false;
+<<<<<<< HEAD
+        public static List<string> HeadTypeDropdownList; //Premade list for when you launch the game (will be set automatically after joining a lobby once)
+>>>>>>> master
+=======
         public static List<string> RagdollTypeList = new List<string> { "Normal", "HeadBurst", "Spring", "Electrocuted", "Comedy Mask", "Tragedy Mask" }; //pre-made list of ragdolls, gets automatically updated after entering a lobby
+>>>>>>> master
 
         private static GameObject TitleMenu;
         private static Transform TitleMenuTransform;
@@ -58,7 +68,11 @@ namespace KillBind.Patches
 
         private static readonly string textTitle = "KILL BIND SETTINGS"; //all caps to match vanilla
         private static readonly string deathcauseTitle = "Cause of death:"; // Cause of Death enums
+<<<<<<< HEAD
+        private static readonly string headtypeTitle = "Ragdoll type:"; // Normal, Decapitated, Spring head
+=======
         private static readonly string headtypeTitle = "Ragdoll type:"; // Normal, Headburst, Spring, etc
+>>>>>>> master
 
         private static readonly Vector2 DropdownSize = new Vector2(156, 30);
         private static readonly Vector3 NormalScale = Vector3.one;
