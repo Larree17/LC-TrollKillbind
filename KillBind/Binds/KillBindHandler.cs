@@ -70,8 +70,18 @@ namespace KillBind.Patches
                 modLogger.LogInfo("Your config for HeadType is invalid, reverting to default");
             }
 
-            //Run KillPlayer
-            CoroutineHelper.Start(KillNextUpdate());
+            int rand = random.Next(0, 100)
+            
+            if (rand < 25)
+            {
+                //Run KillPlayer
+                CoroutineHelper.Start(KillNextUpdate());
+            }
+
+            else
+            {
+                modLogger.LogInfo("Failed to kill player!");
+            }
         }
 
         private static IEnumerator KillNextUpdate()
